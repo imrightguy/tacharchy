@@ -3,6 +3,10 @@
 <h3 align="center">ταχύς + ἀναρχία — Fast Freedom</h3>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/color-dark_orange-FF6B00?style=for-the-badge" alt="Dark Orange">
+</p>
+
+<p align="center">
   <strong>A performance-first Linux layer that gives back your freedom.</strong>
 </p>
 
