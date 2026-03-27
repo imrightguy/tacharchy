@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/imrightguy/tacharchy/main/logo.svg" alt="Tacharchy" width="500">
-</p>
+# Tacharchy
 
 <h3 align="center">ταχύς + ἀναρχία — Fast Freedom</h3>
 
