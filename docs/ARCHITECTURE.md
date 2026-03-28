@@ -95,26 +95,40 @@ tacharchy remove                   # Clean uninstall
 | `tms-shell` | Desktop shell (Quickshell) | Fork: DMS |
 | `tms-greeter` | Login greeter | Fork: DMS |
 
-### Installer Flow
+### Installer: Two-Phase Design
 
-**New system:** Boot the [Omarchy ISO](https://github.com/basecamp/omarchy) to install Arch (Limine bootloader, btrfs, snapper), then run Tacharchy installer on top.
+**Phase 1: Base Install** — Minimal, gets you to a booted Arch desktop.
 
-**Existing Arch:** `curl -fsSL https://install.tacharchy.com | sh`
+- Disk placement (erase, free space, manual)
+- User creation (username, password)
+- Timezone and keyboard layout
+- Bootloader setup (Limine) + btrfs + snapper
+- Reboot
 
-```
-tacharchy install
-  → Preflight (Arch, sudo, network, disk space)
-  → Hardware detection (per-vendor, Go-based)
-  → Compositor selection (niri, Hyprland, Sway, etc.)
-  → Desktop shell (TMS, Waybar, or none)
-  → Theme selection (matugen: wallpaper or named theme)
-  → Performance tuning (tacharchy-foundation)
-  → Optional apps (webapps, dev tools, etc.)
-  → First-run wizard
-  → Post-install
-```
+Headless and fast. Can be our ISO, Omarchy's ISO, or manual Arch install — all produce the same base system.
 
-**Tacharchy ISO (future):** Once stable, snapshot a configured system and build our own ISO. No separate ISO builder needed — Omarchy handles the Arch base.
+**Phase 2: First-Boot Configuration** — Fullscreen, beautiful, guided.
+
+Runs on first login. This is the real Tacharchy experience:
+
+1. Welcome screen with Tacharchy branding
+2. Hardware detection (automatic, shows results)
+3. Compositor selection (niri, Hyprland, Sway, etc.)
+4. Desktop shell (TMS, Waybar, or none)
+5. Theme (matugen: pick a wallpaper or named theme)
+6. Performance tuning (on by default, shows what will apply)
+7. Optional apps (all opt-in)
+8. Apply everything
+9. Done — shows `tacharya doctor` and next steps
+
+Could be built with TMS/Quickshell itself — a fullscreen QML app matching the shell's aesthetic.
+
+**ISO vs Existing Install:**
+- **Tacharchy ISO** — Phase 1 pre-done. User sees only Phase 2.
+- **Omarchy ISO** — Phase 1 via Omarchy, then Phase 2 on first boot.
+- **Existing Arch** — Skip Phase 1, run Phase 2 directly.
+
+Same Phase 2 experience regardless.
 
 ### Theme System
 

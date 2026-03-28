@@ -2,35 +2,34 @@
 
 ## Method 1: Omarchy ISO + Tacharchy (New System)
 
-Boot from the [Omarchy ISO](https://github.com/basecamp/omarchy) to install Arch with Limine bootloader, btrfs, and snapper. Then run Tacharchy on top.
+### Step 1: Base Install via Omarchy ISO
 
-### Step 1: Install Arch via Omarchy ISO
-
-1. Download the Omarchy ISO from [github.com/basecamp/omarchy](https://github.com/basecamp/omarchy)
-2. Create a bootable USB:
+Boot the [Omarchy ISO](https://github.com/basecamp/omarchy) to install Arch with Limine bootloader, btrfs, and snapper. This is **Phase 1** — minimal and fast.
 
 ```bash
 sudo dd if=omarchy-arch-YYYY.MM-DD-x86_64.iso of=/dev/sdX bs=4M status=progress && sync
 ```
 
-3. Boot from USB, run the Omarchy installer — this sets up:
-   - Arch Linux base system
-   - Limine bootloader (with btrfs snapshot support)
-   - btrfs filesystem with snapper for rollback
-   - Plymouth boot splash
-4. Reboot into your new Arch system
+Boot from USB, run Omarchy's installer (disk, user, timezone, keyboard), reboot.
 
-### Step 2: Install Tacharchy
+### Step 2: First-Boot Configuration
 
-```bash
-curl -fsSL https://install.tacharchy.com | sh
-```
+On first login, the Tacharchy fullscreen installer launches automatically (**Phase 2**):
 
-Tacharchy detects your hardware, installs TMS shell + performance tuning, applies theme. See Method 2 for full details.
+1. Welcome screen
+2. Hardware detection (automatic)
+3. Compositor selection
+4. Desktop shell (TMS, Waybar, or none)
+5. Theme (wallpaper or named theme)
+6. Performance tuning
+7. Optional apps
+8. Done
+
+This is the same experience whether you used the Omarchy ISO, the Tacharchy ISO, or installed Arch manually.
 
 ### Rollback
 
-Limine + snapper gives you snapshot/rollback out of the box:
+Limine + snapper gives you snapshot/rollback:
 
 ```bash
 tacharya snapshot              # Create a snapshot
@@ -40,7 +39,7 @@ tacharya snapshot list         # List snapshots
 
 ### Tacharchy ISO (Future)
 
-Once Tacharchy is stable on real hardware, we'll snapshot a configured system and build our own ISO from it. No separate ISO builder — Omarchy's installer handles the Arch base.
+Our ISO will have Phase 1 pre-done — user boots directly into the fullscreen Phase 2 installer.
 
 ## Method 2: Install on Existing Arch
 
