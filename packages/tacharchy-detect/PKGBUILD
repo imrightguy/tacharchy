@@ -1,0 +1,17 @@
+# Maintainer: Tacharchy Team
+pkgname=tacharchy-detect
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Hardware detection script for Tacharchy"
+arch=(any)
+url="https://github.com/tacharchy/tacharchy"
+license=('MIT')
+depends=(bash coreutils util-linux pciutils)
+
+source=(
+    "tacharchy-detect"
+)
+
+package() {
+    install -Dm755 tacharchy-detect "$pkgdir/usr/bin/tacharchy-detect"
+}

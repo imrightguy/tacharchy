@@ -1,0 +1,35 @@
+# Maintainer: Tacharchy Team
+pkgname=tacharchy-gpu
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="GPU driver optimizations for Tacharchy"
+arch=(any)
+url="https://github.com/tacharchy/tacharchy"
+license=('MIT')
+depends=()
+optdepends=('nvidia-utils: NVIDIA GPU support'
+            'nvidia-settings: NVIDIA configuration tool'
+            'libva-mesa-driver: AMD VA-API support'
+            'mesa-vdpau: AMD VDPAU support'
+            'intel-media-driver: Intel VA-API support'
+            'intel-ivsc-firmware: Intel IPU camera firmware (laptops)'
+            'libva-utils: VA-API verification tool')
+backup=('etc/nvidia/nvidia-application-profiles-rc.d/50-tacharchy-niri-vram.json')
+install=tacharchy-gpu.install
+
+source=(
+    "nvidia-niri-vram.json"
+    "nvidia-modprobe.conf"
+    "amd-gpu.conf"
+    "intel-gpu.conf"
+    "tacharchy-gpu.install"
+)
+
+package() {
+    install -Dm644 nvidia-niri-vram.json \
+        "$pkgdir/etc/nvidia/nvidia-application-profiles-rc.d/50-tacharchy-niri-vram.json"
+    install -Dm755 tacharchy-gpu.install "$pkgdir/usr/share/tacharchy/gpu.install"
+    install -Dm644 nvidia-modprobe.conf "$pkgdir/usr/share/tacharchy/nvidia-modprobe.conf.example"
+    install -Dm644 amd-gpu.conf "$pkgdir/usr/share/tacharchy/amd-gpu.conf.example"
+    install -Dm644 intel-gpu.conf "$pkgdir/usr/share/tacharchy/intel-gpu.conf.example"
+}

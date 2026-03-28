@@ -1,0 +1,32 @@
+# Maintainer: Tacharchy Team
+pkgname=tacharchy-foundation
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Meta-package for Tacharchy performance tuning layer"
+arch=(any)
+url="https://github.com/tacharchy/tacharchy"
+license=('MIT')
+depends=(
+    'tacharchy-sysctl'
+    'tacharchy-audio'
+    'tacharchy-gpu'
+    'tacharchy-network'
+    'tacharchy-io'
+    'tacharchy-cpu'
+    'tacharchy-detect'
+)
+optdepends=(
+    'ethtool: For setting NIC ring buffers'
+    'nvidia-utils: NVIDIA GPU support'
+    'libva-mesa-driver: AMD VA-API support'
+    'mesa-vdpau: AMD VDPAU support'
+    'intel-media-driver: Intel VA-API support'
+    'libva-utils: VA-API verification tool'
+)
+
+package() {
+    # This is a meta-package, no files to install
+    # The dependencies pull in all tacharchy components
+    
+    install -Dm644 /dev/null "$pkgdir/usr/share/doc/tacharchy-foundation/README"
+}

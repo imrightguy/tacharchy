@@ -1,0 +1,137 @@
+#!/bin/bash
+# Tacharchy GPU post-install script
+# Detects GPU vendor and provides appropriate configuration guidance
+
+set -e
+
+detect_gpu_vendors() {
+    local vendors=()
+    
+    # Check for NVIDIA
+    if lspci -nn 2>/dev/null | grep -qi 'NVIDIA.*VGA\|NVIDIA.*3D'; then
+        vendors+=("nvidia")
+    fi
+    
+    # Check for AMD
+    if lspci -nn 2>/dev/null | grep -qi 'AMD.*VGA\|AMD.*Display\|Advanced Micro Devices.*VGA'; then
+        vendors+=("amd")
+    fi
+    
+    # Check for Intel
+    if lspci -nn 2>/dev/null | grep -qi 'Intel.*VGA\|Intel.*Display'; then
+        vendors+=("intel")
+    fi
+    
+    echo "${vendors[@]}"
+}
+
+check_nvidia_modeset() {
+    if [[ -f /sys/module/nvidia_drm/parameters/modeset ]]; then
+        cat /sys/module/nvidia_drm/parameters/modeset 2>/dev/null || echo "unknown"
+    else
+        echo "not_loaded"
+    fi
+}
+
+check_nvidia_fbdev() {
+    if [[ -f /sys/module/nvidia_drm/parameters/fbdev ]]; then
+        cat /sys/module/nvidia_drm/parameters/fbdev 2>/dev/null || echo "unknown"
+    else
+        echo "not_loaded"
+    fi
+}
+
+post_install() {
+    echo ":: Tacharchy GPU package installed"
+    echo ""
+    
+    local vendors
+    vendors=$(detect_gpu_vendors)
+    local vendor_array=($vendors)
+    
+    if [[ ${#vendor_array[@]} -eq 0 ]]; then
+        echo "warning: No GPU detected via lspci"
+        echo "   This may be a VM or the pciutils package may not be installed."
+        return 0
+    fi
+    
+    echo "Detected GPU vendor(s): ${vendor_array[*]}"
+    echo ""
+    
+    for vendor in "${vendor_array[@]}"; do
+        case "$vendor" in
+            nvidia)
+                echo "=== NVIDIA GPU Configuration ==="
+                echo ""
+                
+                local modeset fbdev
+                modeset=$(check_nvidia_modeset)
+                fbdev=$(check_nvidia_fbdev)
+                
+                echo "DRM modeset status: $modeset"
+                echo "Framebuffer status: $fbdev"
+                echo ""
+                
+                if [[ "$modeset" != "Y" ]]; then
+                    echo "NOTE: DRM modesetting is not enabled."
+                    echo "For Wayland support, ensure 'nvidia-drm.modeset=1' is in your"
+                    echo "kernel command line."
+                fi
+                
+                echo ""
+                echo "NVIDIA-specific files installed:"
+                echo "  - /etc/nvidia/nvidia-application-profiles-rc.d/50-tacharchy-niri-vram.json"
+                echo "    (Prevents VRAM leak with niri compositor)"
+                echo ""
+                echo "Optional: Copy modprobe config for consistent settings:"
+                echo "  cp /usr/share/tacharchy/nvidia-modprobe.conf.example /etc/modprobe.d/tacharchy-nvidia.conf"
+                ;;
+                
+            amd)
+                echo "=== AMD GPU Configuration ==="
+                echo ""
+                echo "AMD GPUs are well-supported out of the box."
+                echo ""
+                echo "Recommended packages for hardware video acceleration:"
+                echo "  sudo pacman -S libva-mesa-driver mesa-vdpau libva-utils"
+                echo ""
+                echo "Verify VA-API with: vainfo"
+                echo ""
+                echo "For undervolting/overclocking, install 'lact' or 'corectrl':"
+                echo "  yay -S lact"
+                echo ""
+                echo "Optional config example: /usr/share/tacharchy/amd-gpu.conf.example"
+                ;;
+                
+            intel)
+                echo "=== Intel GPU Configuration ==="
+                echo ""
+                echo "Intel GPUs require VA-API drivers for hardware video acceleration."
+                echo ""
+                echo "Recommended packages:"
+                echo "  sudo pacman -S intel-media-driver libva-utils"
+                echo ""
+                echo "For laptops with IPU cameras (12th gen+):"
+                echo "  sudo pacman -S intel-ivsc-firmware"
+                echo ""
+                echo "Verify VA-API with: vainfo"
+                echo ""
+                echo "Optional config example: /usr/share/tacharchy/intel-gpu.conf.example"
+                ;;
+        esac
+        echo ""
+    done
+    
+    echo ":: GPU configuration complete"
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    echo ":: Tacharchy GPU package removed"
+    echo "   NVIDIA profile preserved at:"
+    echo "   /etc/nvidia/nvidia-application-profiles-rc.d/50-tacharchy-niri-vram.json"
+    echo "   Remove manually if not needed."
+}

@@ -1,0 +1,56 @@
+#!/bin/bash
+# Tacharchy I/O post-install script
+# Enables fstrim.timer for SSD maintenance
+
+set -e
+
+post_install() {
+    echo ":: Tacharchy I/O package installed"
+    echo "   Configuration file:"
+    echo "   - /etc/udev/rules.d/60-tacharchy-io-scheduler.rules"
+    echo ""
+    
+    # Enable fstrim.timer for SSD TRIM
+    if systemctl list-unit-files fstrim.timer &>/dev/null; then
+        echo ":: Enabling fstrim.timer for SSD maintenance..."
+        systemctl enable fstrim.timer 2>/dev/null || {
+            echo "note: Could not enable fstrim.timer (may need to run as root)"
+        }
+        
+        if systemctl is-active fstrim.timer &>/dev/null; then
+            echo "   fstrim.timer is already active"
+        else
+            echo "   Starting fstrim.timer..."
+            systemctl start fstrim.timer 2>/dev/null || {
+                echo "note: Could not start fstrim.timer"
+            }
+        fi
+        
+        echo "   fstrim will run weekly to maintain SSD performance."
+    else
+        echo "note: fstrim.timer not found (may not be available on this system)"
+        echo "   Ensure 'util-linux' package is installed."
+    fi
+    
+    echo ""
+    echo ":: To apply udev rules immediately, run:"
+    echo "   sudo udevadm control --reload-rules"
+    echo "   sudo udevadm trigger"
+    echo ""
+    echo ":: To verify scheduler for a device:"
+    echo "   cat /sys/block/<device>/queue/scheduler"
+    echo "   Example: cat /sys/block/nvme0n1/queue/scheduler"
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    echo ":: Tacharchy I/O package removed"
+    echo "   Config file preserved: /etc/udev/rules.d/60-tacharchy-io-scheduler.rules"
+    echo "   Remove manually if not needed."
+    echo ""
+    echo "   fstrim.timer was enabled by this package."
+    echo "   To disable: sudo systemctl disable --now fstrim.timer"
+}

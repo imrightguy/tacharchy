@@ -1,0 +1,148 @@
+#!/bin/bash
+# Tacharchy network post-install script
+# Detects network interfaces and optionally configures ring buffers
+
+set -e
+
+get_network_interfaces() {
+    # Get list of physical network interfaces
+    ls /sys/class/net 2>/dev/null | grep -v -E '^(lo|virbr|docker|veth|br-|flannel|cni)' || true
+}
+
+get_interface_speed() {
+    local iface="$1"
+    if [[ -f "/sys/class/net/$iface/speed" ]]; then
+        cat "/sys/class/net/$iface/speed" 2>/dev/null || echo "0"
+    else
+        echo "0"
+    fi
+}
+
+get_ring_buffer_max() {
+    local iface="$1"
+    local direction="$2"  # rx or tx
+    
+    if command -v ethtool &>/dev/null; then
+        ethtool -g "$iface" 2>/dev/null | \
+            awk -v dir="$direction" '
+                /Pre-set maximums/ { section = "max" }
+                /Current hardware settings/ { section = "current" }
+                section == "max" && $1 == dir { print $2; exit }
+            ' || echo "0"
+    else
+        echo "0"
+    fi
+}
+
+get_ring_buffer_current() {
+    local iface="$1"
+    local direction="$2"  # rx or tx
+    
+    if command -v ethtool &>/dev/null; then
+        ethtool -g "$iface" 2>/dev/null | \
+            awk -v dir="$direction" '
+                /Pre-set maximums/ { section = "max" }
+                /Current hardware settings/ { section = "current" }
+                section == "current" && $1 == dir { print $2; exit }
+            ' || echo "0"
+    else
+        echo "0"
+    fi
+}
+
+post_install() {
+    echo ":: Tacharchy network package installed"
+    echo "   Configuration files:"
+    echo "   - /etc/sysctl.d/99-tacharchy-network.conf (TCP tuning)"
+    echo "   - /etc/modules-load.d/tacharchy-bbr.conf (BBR module)"
+    echo ""
+    
+    # Check if tcp_bbr is available
+    if modinfo tcp_bbr &>/dev/null; then
+        echo "info: tcp_bbr kernel module is available"
+    else
+        echo "warning: tcp_bbr kernel module not found"
+        echo "   BBR congestion control may not be available on your kernel."
+    fi
+    echo ""
+    
+    # Check network interfaces
+    local interfaces
+    interfaces=$(get_network_interfaces)
+    local iface_array=($interfaces)
+    
+    if [[ ${#iface_array[@]} -eq 0 ]]; then
+        echo "info: No physical network interfaces detected"
+        return 0
+    fi
+    
+    echo "Detected network interfaces: ${iface_array[*]}"
+    echo ""
+    
+    # Check for ethtool
+    if ! command -v ethtool &>/dev/null; then
+        echo "info: ethtool not installed - skipping ring buffer detection"
+        echo "   Install with: sudo pacman -S ethtool"
+        return 0
+    fi
+    
+    echo "Ring buffer status:"
+    echo "-------------------"
+    
+    local needs_config=()
+    
+    for iface in "${iface_array[@]}"; do
+        local speed rx_max rx_cur tx_max tx_cur
+        speed=$(get_interface_speed "$iface")
+        rx_max=$(get_ring_buffer_max "$iface" "RX")
+        rx_cur=$(get_ring_buffer_current "$iface" "RX")
+        tx_max=$(get_ring_buffer_max "$iface" "TX")
+        tx_cur=$(get_ring_buffer_current "$iface" "TX")
+        
+        echo "  $iface: ${speed}Mbps"
+        echo "    RX: $rx_cur / $rx_max"
+        echo "    TX: $tx_cur / $tx_max"
+        
+        # Check if we can increase
+        if [[ "$rx_max" != "0" && "$rx_cur" != "$rx_max" ]]; then
+            needs_config+=("$iface")
+        fi
+    done
+    
+    echo ""
+    
+    if [[ ${#needs_config[@]} -gt 0 ]]; then
+        echo ":: The following interfaces could benefit from larger ring buffers:"
+        echo "   ${needs_config[*]}"
+        echo ""
+        echo "   To configure ring buffers permanently:"
+        echo "   1. Check max values: ethtool -g <interface>"
+        echo "   2. Copy template: cp /usr/share/tacharchy/network-link.template \\"
+        echo "                      /etc/systemd/network/10-tacharchy-<interface>.link"
+        echo "   3. Edit the file and set RxBufferSize/TxBufferSize to max values"
+        echo "   4. Reload: sudo udevadm control --reload-rules && sudo udevadm trigger"
+        echo ""
+        echo "   Or set immediately (non-persistent):"
+        echo "   sudo ethtool -G <interface> rx <max> tx <max>"
+    else
+        echo "info: Ring buffers are already at maximum"
+    fi
+    
+    echo ""
+    echo ":: To apply BBR now, run:"
+    echo "   sudo modprobe tcp_bbr"
+    echo "   sudo sysctl -p /etc/sysctl.d/99-tacharchy-network.conf"
+    echo ""
+    echo "   Verify with: sysctl net.ipv4.tcp_congestion_control"
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    echo ":: Tacharchy network package removed"
+    echo "   Config files preserved. Remove manually:"
+    echo "   - /etc/sysctl.d/99-tacharchy-network.conf"
+    echo "   - /etc/modules-load.d/tacharchy-bbr.conf"
+}

@@ -1,0 +1,27 @@
+# Maintainer: Tacharchy Team
+pkgname=tacharchy-network
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Network stack tuning for Tacharchy"
+arch=(any)
+url="https://github.com/tacharchy/tacharchy"
+license=('MIT')
+depends=()
+optdepends=('ethtool: For setting NIC ring buffers')
+backup=('etc/sysctl.d/99-tacharchy-network.conf'
+        'etc/modules-load.d/tacharchy-bbr.conf')
+install=tacharchy-network.install
+
+source=(
+    "network-sysctl.conf"
+    "bbr-modules.conf"
+    "network-link.template"
+    "tacharchy-network.install"
+)
+
+package() {
+    install -Dm644 network-sysctl.conf "$pkgdir/etc/sysctl.d/99-tacharchy-network.conf"
+    install -Dm644 bbr-modules.conf "$pkgdir/etc/modules-load.d/tacharchy-bbr.conf"
+    install -Dm755 tacharchy-network.install "$pkgdir/usr/share/tacharchy/network.install"
+    install -Dm644 network-link.template "$pkgdir/usr/share/tacharchy/network-link.template"
+}

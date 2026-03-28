@@ -1,0 +1,23 @@
+# Maintainer: Tacharchy Team
+pkgname=tacharchy-cpu
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="CPU scheduler tuning for Tacharchy"
+arch=(any)
+url="https://github.com/tacharchy/tacharchy"
+license=('MIT')
+depends=()
+backup=('etc/systemd/system/user.slice.d/affinity.conf')
+install=tacharchy-cpu.install
+
+source=(
+    "cpu-tmpfiles.conf"
+    "user-slice-affinity.conf"
+    "tacharchy-cpu.install"
+)
+
+package() {
+    install -Dm644 cpu-tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/tacharchy-cpu.conf"
+    install -Dm644 user-slice-affinity.conf "$pkgdir/etc/systemd/system/user.slice.d/affinity.conf"
+    install -Dm755 tacharchy-cpu.install "$pkgdir/usr/share/tacharchy/cpu.install"
+}

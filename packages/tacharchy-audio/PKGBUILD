@@ -1,0 +1,29 @@
+# Maintainer: Tacharchy Team
+pkgname=tacharchy-audio
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="PipeWire realtime scheduling and audio optimizations for Tacharchy"
+arch=(any)
+url="https://github.com/tacharchy/tacharchy"
+license=('MIT')
+depends=(systemd bash)
+optdepends=('pipewire: Audio server (recommended)')
+backup=('etc/security/limits.d/20-tacharchy-audio.conf'
+        'etc/modprobe.d/tacharchy-audio.conf')
+install=tacharchy-audio.install
+
+source=(
+    "limits.conf"
+    "modprobe.conf"
+    "tmpfiles.conf"
+    "pipewire-affinity.conf"
+    "tacharchy-audio.install"
+)
+
+package() {
+    install -Dm644 limits.conf "$pkgdir/etc/security/limits.d/20-tacharchy-audio.conf"
+    install -Dm644 modprobe.conf "$pkgdir/etc/modprobe.d/tacharchy-audio.conf"
+    install -Dm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/tacharchy-audio.conf"
+    install -Dm644 pipewire-affinity.conf "$pkgdir/usr/share/tacharchy/pipewire-affinity.conf.example"
+    install -Dm755 tacharchy-audio.install "$pkgdir/usr/share/tacharchy/audio.install"
+}

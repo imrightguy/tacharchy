@@ -1,0 +1,21 @@
+# Maintainer: Tacharchy Team
+pkgname=tacharchy-sysctl
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Kernel parameter tuning for Tacharchy performance layer"
+arch=(any)
+url="https://github.com/tacharchy/tacharchy"
+license=('MIT')
+depends=(bash)
+backup=('etc/sysctl.d/99-tacharchy-sysctl.conf')
+install=tacharchy-sysctl.install
+
+source=(
+    "sysctl.conf"
+    "tacharchy-sysctl.install"
+)
+
+package() {
+    install -Dm644 sysctl.conf "$pkgdir/etc/sysctl.d/99-tacharchy-sysctl.conf"
+    install -Dm755 tacharchy-sysctl.install "$pkgdir/usr/share/tacharchy/sysctl.install"
+}
