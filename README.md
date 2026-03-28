@@ -104,7 +104,7 @@ tacharya remove                    # Clean uninstall
 
 ## Philosophy
 
-1. **Performance tuning is the core value** — everything else is borrowed and improved
+1. **Performance tuning is our unique contribution** — the piece nobody else provides, baked into a complete desktop
 2. **We give back your freedom** — compositor, shell, theme, apps: your choice
 3. **No bullshit** — no censorship, no politics, no gatekeeping
 4. **Don't reinvent** — fork what works, improve what doesn't, build only what's missing
