@@ -80,13 +80,18 @@ Port Omarchy's app configs and webapp system.
 - [ ] Screenshot/screen recording integration
 - [ ] Clipboard management (cliphist)
 
-### 1f: Polish & Release
+### 1f: ISO & Installer
 
+- [ ] Arch-based ISO with Tacharchy pre-installed (Limine bootloader)
+- [ ] Snapshot/rollback system (Limine + snapper, btrfs)
+- [ ] Boot from USB → auto-detect hardware → install
 - [ ] AUR repository setup (GPG key, repo host, CI/CD)
-- [ ] Documentation site (tacharchy.com)
+
+### 1g: Polish & Release
+
 - [ ] Install script live (curl tacharchy.sh | sh)
+- [ ] Documentation site (tacharchy.com)
 - [ ] Screenshots for each compositor + theme combo
-- [ ] CONTRIBUTING.md final polish
 - [ ] `tacharya remove` — clean uninstall
 - [ ] Release v0.1.0-alpha
 - [ ] Announce on Reddit, forums, Discord
@@ -102,14 +107,8 @@ Port Omarchy's app configs and webapp system.
 
 - [ ] Gentoo support (ebuild)
 - [ ] NixOS support (flake / home-manager)
-- [ ] Snapshot/rollback system (Limine + snapper)
 
-## Phase 4: ISO Images
-
-- [ ] Arch-based ISO with Tacharchy pre-installed
-- [ ] Calamares or custom installer integration
-
-## Phase 5: Kernel
+## Phase 4: Kernel
 
 - [ ] Custom kernel packages (BORE/EEVDF scheduler patches)
 - [ ] Kernel module hook integration
