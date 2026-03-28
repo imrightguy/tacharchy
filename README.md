@@ -38,7 +38,7 @@ We don't reinvent. We take what works from the best projects, improve what's bro
 curl -fsSL https://install.tacharchy.com | sh
 ```
 
-One command. Detects your distro, hardware, and guides you through setup.
+One command. Detects your distro and hardware, installs everything automatically.
 
 Currently supports: Arch Linux. Fedora, Debian, Ubuntu, openSUSE coming soon.
 

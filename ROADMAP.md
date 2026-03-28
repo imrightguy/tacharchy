@@ -36,7 +36,7 @@ Fork DankMaterialShell, rebrand as TMS, maintain plugin API compatibility.
 - [ ] Rebrand: DMS → TMS (logo, colors, CLI name)
 - [ ] Ensure DMS plugin API compatibility (all existing plugins work)
 - [ ] Port `dms` Go CLI → `tacharchy` CLI with our subcommands added
-- [ ] Port TUI installer (`dankinstall` → `tacharchy install`)
+- [ ] Port bash installer (Omarchy-style) with hardware detection and auto-config
 - [ ] Integrate Omarchy's hardware detection into the installer
 - [ ] Integrate performance tuning package installation into the installer
 - [ ] Add `tacharya status` — show current tuning state
