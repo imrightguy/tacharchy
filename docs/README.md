@@ -22,6 +22,7 @@ Every value documented with reasoning, tradeoffs, and sources.
 
 ## Desktop
 
+- [First Boot](FIRST_BOOT.md) — Two-phase install philosophy and fullscreen onboarding flow
 - [Compositors](COMPOSITORS.md) — Supported Wayland compositors, keybinds, shell integration
 - [Theming](THEMING.md) — matugen theme engine, named themes, per-app theming, custom themes
 - [Hardware Detection](HARDWARE.md) — Per-vendor fixes, GPU/CPU/audio/storage detection
