@@ -7,105 +7,121 @@
 </p>
 
 <p align="center">
-  <strong>A performance-first Linux layer that gives back your freedom.</strong>
+  <strong>Performance-tuned Linux desktop. Fork what works, improve what doesn't, build only what's missing.</strong>
 </p>
 
 <p align="center">
-  <a href="https://tacharchy.com">Website</a> ·
-  <a href="https://tacharchy.rip">tacharchy.rip</a> ·
-  <a href="https://github.com/imrightguy/tacharchy/discussions">Discussions</a>
+  <a href="#what-is-tacharchy">About</a> ·
+  <a href="#install">Install</a> ·
+  <a href="ROADMAP.md">Roadmap</a> ·
+  <a href="docs/ARCHITECTURE.md">Architecture</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
 ---
 
 ## What is Tacharchy?
 
-Tacharchy makes your Linux system run optimally — and gives back your freedom.
+Tacharchy is a complete Linux desktop environment built on three pillars:
 
-The Linux desktop ecosystem has a gap:
+- **[DankLinux/DMS](https://github.com/AvengeMedia/DankMaterialShell)** — Quickshell-based desktop shell, Go backend, cross-distro packaging, multi-compositor support, plugin system
+- **[Omarchy](https://github.com/basecamp/omarchy)** — Hardware detection, migration system, theme library, app ecosystem
+- **Performance tuning layer (original)** — sysctl, CPU scheduler, GPU, audio, network, I/O optimization
 
-- **Plain distros** give you freedom but zero opinions — you spend days tuning sysctls, audio, scheduling, and GPU setup
-- **Opinionated distros** give you a polished setup but force their choices — apps, compositor, politics
-- **Dotfile setups** give you beautiful desktops but are fragile and don't touch the performance layer
+We don't reinvent. We take what works from the best projects, improve what's broken, and fill the gaps nobody else fills.
 
-Tacharchy fills the gap: **opinionated about performance, gives back your freedom.**
+**TMS (Tacharchy Material Shell)** is our desktop shell, forked from DMS with full plugin compatibility.
 
-## The Three Layers
+## Install
 
-### 🔧 Foundation (always applied)
+```bash
+curl -fsSL https://install.tacharchy.com | sh
+```
 
-System-level tuning you shouldn't have to think about:
+One command. Detects your distro, hardware, and guides you through setup.
 
-- **CPU scheduling** — hybrid core awareness (P-cores / E-cores), per-core EPP tuning
-- **Audio pipeline** — PipeWire realtime priority, RT scheduling, OOM protection
-- **GPU setup** — NVIDIA DRM modeset, VRAM management, compositor optimization
-- **Network** — BBR congestion control, ring buffer sizing, backlog tuning
-- **I/O** — per-device scheduler selection (NVMe→none, SSD→mq-deadline, HDD→bfq)
-- **Memory** — swap management, dirty page tuning, VFS cache optimization
-- **Filesystem** — fstrim, mount options, btrfs snapshot configuration
-- **Security basics** — firewall (opt-in), kernel hardening
+Currently supports: Arch Linux. Fedora, Debian, Ubuntu, openSUSE coming soon.
 
-### 🖥️ Desktop (you choose)
+## What You Get
 
-First-run wizard presents options — nothing is forced:
+### Performance Tuning (our unique value)
 
-- **Compositor**: niri, Hyprland, Sway, labwc, river, Wayfire, dwl, GNOME, KDE
-- **Shell**: DankMaterialShell, Waybar, or none
-- **Theme**: 19+ themes with dynamic color generation (wallpaper → entire desktop)
-- **Apps**: opt-in bundles — communication, media, office, dev, gaming
+System-level tuning nobody else provides:
 
-### 🎨 Theming (you choose)
+- **CPU** — Intel hybrid P/E core awareness, per-core EPP tuning, AMD preferred cores
+- **Audio** — PipeWire realtime priority, CPU affinity, OOM protection
+- **GPU** — NVIDIA/AMD/Intel driver optimization, compositor-specific fixes
+- **Network** — BBR congestion control, NIC ring buffers, backlog tuning
+- **I/O** — Auto-detected scheduler (NVMe→none, SSD→mq-deadline, HDD→bfq)
+- **Memory** — Swap management, dirty page tuning, VFS cache optimization
 
-- Material Design 3 color palette generation from any wallpaper
-- Consistent colors across terminal, editor, compositor, bar, and apps
-- Per-app theme configs: neovim, VS Code, btop, Chromium, Waybar
-- Light and dark mode support
+Every value documented with reasoning. See `docs/` for the full reference.
 
-## Status
+### Desktop Shell (TMS)
 
-🚧 **Early development.** Currently in research and planning phase.
+Forked from DMS. Replaces waybar + swaylock + swayidle + mako + fuzzel + polkit with one unified shell:
 
-We're forking and studying [Omarchy](https://github.com/basecamp/omarchy) (installer framework, hardware detection, theming) and [DankLinux](https://github.com/AvengeMedia/DankLinux) (cross-distro package infrastructure) to build on what works.
+- Dynamic Material You theming from any wallpaper
+- Control center (network, Bluetooth, audio, display, night mode)
+- Spotlight launcher (apps, files, emojis, windows, calculator, commands)
+- Smart notifications with grouping
+- Media integration (MPRIS, calendar, weather, clipboard)
+- Plugin system (DMS plugins work out of the box)
 
-### What we're building vs. forking
+### Multi-Compositor
 
-| Component | Approach |
-|---|---|
-| Performance tuning layer | **Building new** — our core value, nobody else does this |
-| Installer framework | Fork from Omarchy, decouple from Hyprland |
-| Hardware detection | Fork from Omarchy — excellent per-vendor support |
-| Theme system | Fork from Omarchy — colors.toml format, compositor-agnostic |
-| Compositor configs | **Building new** — niri, Hyprland, Sway, labwc, river, Wayfire, dwl |
-| User choice wizard | **Building new** |
-| Cross-distro builds | Adapt from DankLinux (for future phases) |
+niri, Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM — your choice.
+
+### Hardware Detection
+
+Per-vendor, per-model fixes: Intel, NVIDIA, AMD, Apple T2, ASUS ROG, Framework, Dell XPS, Surface, Broadcom, Tuxedo.
+
+### Cross-Distro (Phase 2+)
+
+| Distro | Format | Status |
+|---|---|---|
+| Arch Linux | AUR | ✅ Phase 1 |
+| Fedora | COPR | Phase 2 |
+| Debian | OBS | Phase 2 |
+| Ubuntu | PPA | Phase 2 |
+| openSUSE | OBS | Phase 2 |
+
+## CLI
+
+```bash
+tacharchy                          # Status overview
+tacharchy install                  # TUI installer
+tacharchy update                   # Update system
+tacharchy detect                   # Hardware report
+tacharchy theme set tokyo-night    # Apply theme
+tacharchy theme set /path/to/wp    # Dynamic palette from wallpaper
+tacharya status                    # Tuning state
+tacharya benchmark                 # Before/after comparison
+tacharya ipc call spotlight toggle # Programmatic control
+tacharya doctor                    # Diagnostics
+tacharya remove                    # Clean uninstall
+```
 
 ## Philosophy
 
-1. **Performance tuning is the core value** — everything else is secondary
-2. **We give back your freedom** — user chooses their stack. No forced apps, compositor, or desktop shell.
-3. **No censorship, no politics in the project** — we ship code, not ideological gatekeeping
-4. **Everything documented with reasoning** — if we set a sysctl value, we explain why
-5. **Everything reversible** — one command to remove all traces
-6. **Start narrow, expand carefully** — Arch-only until solid, then more distros
-
-## Roadmap
-
-- [x] Research: CachyOS tuning, Omarchy architecture, DankLinux model
-- [x] Define vision, principles, and scope
-- [x] Fork Omarchy and DankLinux for study
-- [ ] Phase 1a: Build performance tuning packages
-- [ ] Phase 1b: Build installer (fork Omarchy)
-- [ ] Phase 1c: Build theming system (fork Omarchy)
-- [ ] Phase 1d: Multi-compositor support
-- [ ] Phase 1e: Polish and release
-
-See [ROADMAP.md](ROADMAP.md) for the full plan.
+1. **Performance tuning is the core value** — everything else is borrowed and improved
+2. **We give back your freedom** — compositor, shell, theme, apps: your choice
+3. **No bullshit** — no censorship, no politics, no gatekeeping
+4. **Don't reinvent** — fork what works, improve what doesn't, build only what's missing
+5. **Everything documented with reasoning**
+6. **Everything reversible** — one command to remove all traces
+7. **Plugin compatible** — DMS plugins work out of the box
+8. **Wayland only**
 
 ## Name
 
 **Tacharchy** — from Greek *ταχύς* (tachys, "swift, fast") + *ἀναρχία* (anarchia, "without rulers, self-governance").
 
-Fast freedom. Performance that gives back your freedom.
+Fast freedom.
+
+## Status
+
+🚧 **Early development.** Phase 1a (performance tuning packages) complete. Forking DMS and Omarchy next.
 
 ## License
 
@@ -114,5 +130,5 @@ MIT
 ---
 
 <p align="center">
-  <sub>RIP bloat. Your system, your choice.</sub>
+  <sub>Don't reinvent. Improve.</sub>
 </p>
