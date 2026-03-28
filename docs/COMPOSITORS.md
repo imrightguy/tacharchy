@@ -1,6 +1,6 @@
 # Compositor Support
 
-Tacharchy supports multiple Wayland compositors. Choose yours during installation.
+Tacharchy supports multiple Wayland compositors through TMS (Tacharchy Material Shell). Choose yours during installation — nothing is forced.
 
 ## Supported Compositors
 
@@ -9,84 +9,117 @@ Scrollable-tiling Wayland compositor with smooth animations. Our recommended def
 
 - **Config format:** KDL (`config.kdl`)
 - **Status:** Primary target, best tested
-- **Theme integration:** Full (colors, borders, animations, gaps)
+- **TMS integration:** Full (workspace switching, overview, monitor management)
+- **Standalone:** Full theme support
 
 ### Hyprland
 Dynamic tiling Wayland compositor with extensive customization.
 
 - **Config format:** Hyprland config (`hyprland.conf`)
-- **Status:** Supported
-- **Theme integration:** Full
+- **Status:** Fully supported
+- **TMS integration:** Full
+- **Standalone:** Full theme support
 
 ### Sway
 i3-compatible Wayland compositor. Stable and well-documented.
 
 - **Config format:** i3-compatible (`config`)
+- **Status:** Fully supported
+- **TMS integration:** Full
+- **Standalone:** Full theme support
+
+### MangoWC
+Wayland compositor built with MangoHud's rendering pipeline.
+
+- **Config format:** Custom
 - **Status:** Supported
-- **Theme integration:** Full
+- **TMS integration:** Full
+- **Standalone:** Basic theme support
 
 ### labwc
 Stacking Wayland compositor (openbox-compatible).
 
 - **Config format:** XML (`rc.xml`) + theme
 - **Status:** Supported
-- **Theme integration:** Colors and borders
+- **TMS integration:** Full
+- **Standalone:** Colors and borders
+
+### Scroll
+Scrolling Wayland compositor.
+
+- **Config format:** Custom
+- **Status:** Supported
+- **TMS integration:** Full
+- **Standalone:** Basic theme support
+
+### Miracle WM
+Tiling Wayland compositor for Ubuntu.
+
+- **Config format:** Custom
+- **Status:** Supported
+- **TMS integration:** Full
+- **Standalone:** Basic theme support
 
 ### river
 Dynamic tiling Wayland compositor (inspired by dwm).
 
 - **Config format:** init script
 - **Status:** Planned
-- **Theme integration:** Basic
+- **TMS integration:** Basic
+- **Standalone:** Colors only
 
 ### Wayfire
 3D Wayland compositor with effects.
 
 - **Config format:** INI (`wf.ini`)
 - **Status:** Planned
-- **Theme integration:** Planned
+- **TMS integration:** Planned
+- **Standalone:** Planned
 
 ### dwl
 Minimal dwm-like Wayland compositor.
 
 - **Config format:** C header (`config.h`) — requires recompilation
 - **Status:** Planned
-- **Theme integration:** Basic (colors only)
+- **TMS integration:** Limited (no ext_workspace protocol)
+- **Standalone:** Colors only
 
-## Not Supported (Yet)
+## Not Supported
 
-### GNOME
-GNOME has its own theming system that doesn't follow the same patterns. Could add basic support later (tweaked GNOME settings + performance tuning) but full theme integration would require GNOME Shell extensions.
+### GNOME / KDE Plasma
+These have their own shell, theming system, and ecosystem. Tacharchy's performance tuning packages still apply. TMS and theme integration are not planned — GNOME and KDE users should use their native tools.
 
-### KDE Plasma
-Similar to GNOME — KDE has its own theme engine. Performance tuning packages still apply. Full theme integration is a future consideration.
+### X11 Compositors
+Tacharchy is Wayland only. No X11 support is planned.
 
-## Adding a New Compositor
+## Desktop Shell Options
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-a-new-compositor) for the process.
+### TMS (Tacharchy Material Shell)
+The full desktop shell experience. Replaces waybar + swaylock + swayidle + mako + fuzzel + polkit with one unified Quickshell app. Works best with niri and Hyprland, fully supported on all listed compositors.
+
+### Standalone
+No desktop shell. Just your compositor with Tacharchy's performance tuning and theme colors applied. For minimalists who prefer their own bar, notifications, and launcher.
 
 ## Keybind Consistency
 
 We aim for consistent keybinds across compositors where possible:
 
-| Action | Default |
-|---|---|
-| Terminal | `Super + Enter` |
-| App launcher | `Super + Space` |
-| Close window | `Super + Shift + Q` |
-| Move focus left/right | `Super + Arrow` or `Super + HJKL` |
-| Toggle floating | `Super + V` |
-| Fullscreen | `Super + F` |
-| Screenshot | `Print` |
-| Screenshot region | `Super + Print` |
+| Action | Default | Notes |
+|---|---|---|
+| Terminal | `Super + Enter` | |
+| App launcher | `Super + Space` | TMS spotlight or system launcher |
+| Close window | `Super + Shift + Q` | |
+| Move focus | `Super + Arrow` or `Super + HJKL` | Vim-style optional |
+| Toggle floating | `Super + V` | Tiling compositors only |
+| Fullscreen | `Super + F` | |
+| Screenshot | `Print` | Full screen |
+| Screenshot region | `Super + Print` | Selection tool |
+| Screen record | `Super + Shift + Print` | |
+| Volume up/down | `XF86AudioRaise/LowerVolume` | Via SwayOSD or TMS |
+| Brightness up/down | `XF86MonBrightnessUp/Down` | Via SwayOSD or TMS |
+| Lock screen | `Super + L` | TMS lock or swaylock |
+| Overview | `Super + Tab` | TMS workspace overview |
 
-## Desktop Shell Integration
+## Adding a New Compositor
 
-### DankMaterialShell (DMS)
-Full desktop environment built with Quickshell. Works best with niri.
-
-### Waybar
-Lightweight status bar. Works with all compositors.
-
-### None
-No bar, no shell. Just the compositor. For minimalists.
+See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-a-compositor) for the process.
