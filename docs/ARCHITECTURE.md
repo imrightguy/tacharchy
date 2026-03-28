@@ -141,7 +141,7 @@ TMS maintains full API compatibility with DMS plugins. All existing DMS plugins 
 
 | Distro | Package Format | Status |
 |---|---|---|
-| Arch Linux | AUR + pacman | Phase 1 |
+| Arch Linux (primary distro) | AUR + pacman | Phase 1 |
 | Fedora | COPR | Phase 2 |
 | Debian | OBS / apt | Phase 2 |
 | Ubuntu | PPA / Launchpad | Phase 2 |
