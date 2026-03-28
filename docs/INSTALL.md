@@ -1,43 +1,46 @@
 # Installation
 
-## Method 1: ISO (Recommended)
+## Method 1: Omarchy ISO + Tacharchy (New System)
 
-Boot from a USB drive. Auto-detects your hardware, installs everything in one go.
+Boot from the [Omarchy ISO](https://github.com/basecamp/omarchy) to install Arch with Limine bootloader, btrfs, and snapper. Then run Tacharchy on top.
 
-### Download
+### Step 1: Install Arch via Omarchy ISO
 
-```
-https://github.com/imrightguy/tacharchy/releases
-```
-
-### Create USB
+1. Download the Omarchy ISO from [github.com/basecamp/omarchy](https://github.com/basecamp/omarchy)
+2. Create a bootable USB:
 
 ```bash
-# Using dd (replaces /dev/sdX with your USB drive)
-sudo dd if=tacharchy-arch-YYYY.MM-DD-x86_64.iso of=/dev/sdX bs=4M status=progress && sync
+sudo dd if=omarchy-arch-YYYY.MM-DD-x86_64.iso of=/dev/sdX bs=4M status=progress && sync
 ```
 
-### Boot
+3. Boot from USB, run the Omarchy installer — this sets up:
+   - Arch Linux base system
+   - Limine bootloader (with btrfs snapshot support)
+   - btrfs filesystem with snapper for rollback
+   - Plymouth boot splash
+4. Reboot into your new Arch system
 
-1. Insert USB, reboot, enter boot menu (usually F12, Esc, or F2)
-2. Select the USB drive
-3. The installer auto-detects your hardware and guides you through:
-   - Disk selection (erase, use free space, manual partitioning)
-   - Compositor choice (niri, Hyprland, Sway, etc.)
-   - Desktop shell (TMS, Waybar, or none)
-   - Theme (matugen: wallpaper or named theme)
-   - Performance tuning (enabled by default)
-4. Reboot into your new system
+### Step 2: Install Tacharchy
 
-### Snapshot/Rollback
+```bash
+curl -fsSL https://install.tacharchy.com | sh
+```
 
-Tacharchy uses Limine bootloader with btrfs snapshots via snapper. If something breaks:
+Tacharchy detects your hardware, installs TMS shell + performance tuning, applies theme. See Method 2 for full details.
+
+### Rollback
+
+Limine + snapper gives you snapshot/rollback out of the box:
 
 ```bash
 tacharya snapshot              # Create a snapshot
-tacharya snapshot rollback     # Roll back to previous snapshot
-tacharya snapshot list         # List available snapshots
+tacharya snapshot rollback     # Roll back
+tacharya snapshot list         # List snapshots
 ```
+
+### Tacharchy ISO (Future)
+
+Once Tacharchy is stable on real hardware, we'll snapshot a configured system and build our own ISO from it. No separate ISO builder — Omarchy's installer handles the Arch base.
 
 ## Method 2: Install on Existing Arch
 

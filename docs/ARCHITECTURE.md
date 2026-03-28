@@ -97,11 +97,15 @@ tacharchy remove                   # Clean uninstall
 
 ### Installer Flow
 
+**New system:** Boot the [Omarchy ISO](https://github.com/basecamp/omarchy) to install Arch (Limine bootloader, btrfs, snapper), then run Tacharchy installer on top.
+
+**Existing Arch:** `curl -fsSL https://install.tacharchy.com | sh`
+
 ```
-curl tacharchy.sh | sh
-  → Preflight (distro detection, sudo, network, disk space)
-  → Hardware detection (Go-based per-vendor detection)
-  → Compositor selection (niri, Hyprland, Sway, labwc, etc.)
+tacharchy install
+  → Preflight (Arch, sudo, network, disk space)
+  → Hardware detection (per-vendor, Go-based)
+  → Compositor selection (niri, Hyprland, Sway, etc.)
   → Desktop shell (TMS, Waybar, or none)
   → Theme selection (matugen: wallpaper or named theme)
   → Performance tuning (tacharchy-foundation)
@@ -109,6 +113,8 @@ curl tacharchy.sh | sh
   → First-run wizard
   → Post-install
 ```
+
+**Tacharchy ISO (future):** Once stable, snapshot a configured system and build our own ISO. No separate ISO builder needed — Omarchy handles the Arch base.
 
 ### Theme System
 
