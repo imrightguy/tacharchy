@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <strong>Performance-tuned Linux desktop. Fork what works, improve what doesn't, build only what's missing.</strong>
+  <strong>Performance-tuned Linux desktop. Fork DMS as foundation, absorb Omarchy's knowledge natively, build only what's missing.</strong>
 </p>
 
 <p align="center">

@@ -46,7 +46,7 @@ Fork DankMaterialShell, rebrand as TMS, maintain plugin API compatibility.
 
 ### 1c: Fork Omarchy Hardware Detection
 
-Port Omarchy's per-vendor hardware detection scripts into the Go backend.
+Implement per-vendor hardware detection natively in Go (inspired by Omarchy's fixes).
 
 - [ ] Intel detection (CPU, GPU, WiFi 7, IPU camera, LPMD, thermald, PTL kernel)
 - [ ] NVIDIA detection (GPU arch: Turing+ vs legacy, correct driver, KMS, env vars)
@@ -62,7 +62,7 @@ Port Omarchy's per-vendor hardware detection scripts into the Go backend.
 
 matugen: Material You palette generation from wallpaper or seed color.
 
-- [ ] Port Omarchy's 19 colors.toml themes
+- [ ] Convert Omarchy's 19 themes to matugen seed colors
 - [ ] Ensure matugen dynamic theming works through TMS
 - [ ] Create Tacharchy default theme (dark orange brand)
 - [ ] Per-app theme configs: neovim, VS Code, btop, Chromium, ghostty, kitty, alacritty

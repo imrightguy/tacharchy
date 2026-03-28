@@ -2,9 +2,9 @@
 
 ## Overview
 
-Tacharchy is a complete Linux desktop environment forked from [DankLinux/DMS](https://github.com/AvengeMedia/DankMaterialShell) and [Omarchy](https://github.com/basecamp/omarchy), with an original performance tuning layer on top.
+Tacharchy is a complete Linux desktop environment forked from [DankLinux/DMS](https://github.com/AvengeMedia/DankMaterialShell), with ideas from [Omarchy](https://github.com/basecamp/omarchy) and an original performance tuning layer.
 
-We don't reinvent — we take what works, improve what doesn't, and fill the gaps nobody else is filling.
+One codebase. One architecture. Go backend, Quickshell shell, matugen theming, cross-distro, multi-compositor. We take DMS's solid foundation, absorb Omarchy's best ideas natively, and add performance tuning on top.
 
 ## Naming
 
@@ -26,18 +26,16 @@ We don't reinvent — we take what works, improve what doesn't, and fill the gap
 - **Greeter support** — GDM/greetd integration
 - **Doctor/diagnostics** — `tacharya doctor`
 
-### From Omarchy (hardware + apps)
-- **Hardware detection & fixes** — per-vendor, per-model (ASUS ROG, Framework, Surface, Apple T2, Dell XPS, Intel, NVIDIA, Broadcom, Tuxedo)
-- **Migration system** — timestamp-based config migration tracking
-- **App ecosystem** — webapp system, per-app configs (ghostty, kitty, alacritty, waybar, tmux, lazygit, fastfetch, starship)
-- **Theme library** — 19 static themes in colors.toml format
-- **Package management CLI** — distro-agnostic package install/remove/present/missing
-- **Snapshot/rollback** — Limine bootloader + snapper btrfs snapshots
-- **Battery management** — capacity, monitor, hibernation
-- **Hot-reload** — `tacharya refresh-*` for individual app configs on theme change
-- **Hidden desktop entries** — clean up app launchers
-- **Custom desktop icons** — for common apps
+### From Omarchy (ideas, not code)
 
+We absorb Omarchy's knowledge natively into the DMS codebase. No bash scripts imported.
+
+- **Hardware detection** — rewrite per-vendor fixes in Go (lspci checks, config writes)
+- **Theme library** — convert 19 colors.toml themes to matugen seed colors
+- **Migration system** — implement timestamp-based migrations in Go
+- **App configs** — port per-app config templates into TMS's theme pipeline
+- **Webapp system** — rebuild as Go CLI command
+- **Hidden desktop entries + custom icons** — port directly, no rewrite needed
 ### Original (performance tuning)
 - **tacharchy-sysctl** — kernel parameter tuning with documented reasoning
 - **tacharchy-cpu** — Intel hybrid P/E core tuning, AMD preferred cores
@@ -102,10 +100,10 @@ tacharchy remove                   # Clean uninstall
 ```
 curl tacharchy.sh | sh
   → Preflight (distro detection, sudo, network, disk space)
-  → Hardware detection (Omarchy's per-vendor scripts)
+  → Hardware detection (Go-based per-vendor detection)
   → Compositor selection (niri, Hyprland, Sway, labwc, etc.)
   → Desktop shell (TMS, Waybar, or none)
-  → Theme selection (static or dynamic)
+  → Theme selection (matugen: wallpaper or named theme)
   → Performance tuning (tacharchy-foundation)
   → Optional apps (webapps, dev tools, etc.)
   → First-run wizard
@@ -114,12 +112,9 @@ curl tacharchy.sh | sh
 
 ### Theme System
 
-Two theme engines, one application layer:
+Single matugen engine. Wallpaper or seed color → Material You palette → applied to TMS shell, GTK, Qt, terminals, editors. One pipeline, one code path.
 
-1. **Dynamic (matugen)** — wallpaper → Material You palette, applied to TMS shell, GTK, Qt, terminals, editors
-2. **Static (colors.toml)** — 19 pre-built themes from Omarchy, same application layer
-
-Both feed into the same theme application pipeline. User picks whichever they prefer.
+Named themes (from Omarchy's library) are converted to matugen seed colors. See [docs/THEMING.md](THEMING.md).
 
 ### Hardware Detection
 
@@ -159,7 +154,7 @@ TMS maintains full API compatibility with DMS plugins. All existing DMS plugins 
 1. **Performance tuning is the core value** — everything else is borrowed and improved
 2. **We give back your freedom** — compositor, shell, theme, apps: your choice
 3. **No bullshit** — no censorship, no politics, no gatekeeping
-4. **Don't reinvent** — fork what works, improve what doesn't, build only what's missing
+4. **Don't reinvent** — fork DMS as the foundation, absorb Omarchy's knowledge natively, build only what's missing
 5. **Everything documented with reasoning** — every sysctl, every fix, every choice
 6. **Everything reversible** — one command to remove all traces
 7. **Plugin compatible** — DMS plugins work out of the box
