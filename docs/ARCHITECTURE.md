@@ -2,149 +2,170 @@
 
 ## Overview
 
-Tacharchy is a Linux configuration layer, not a full distribution. It installs on top of an existing Arch Linux system and provides:
+Tacharchy is a complete Linux desktop environment forked from [DankLinux/DMS](https://github.com/AvengeMedia/DankMaterialShell) and [Omarchy](https://github.com/basecamp/omarchy), with an original performance tuning layer on top.
 
-1. **Performance tuning** — system-level optimizations for CPU, GPU, audio, network, I/O, and memory
-2. **Hardware detection** — automatic identification and configuration of hardware
-3. **Compositor support** — config templates for multiple Wayland compositors
-4. **Theming** — dynamic color generation from wallpapers
-5. **User choice** — nothing is forced; everything is selected during installation
+We don't reinvent — we take what works, improve what doesn't, and fill the gaps nobody else is filling.
+
+## Naming
+
+- **Tacharchy** — the project, the brand, the CLI
+- **TMS** — Tacharchy Material Shell, the desktop shell (forked from DMS, plugin-compatible)
+- **tacharchy-\*** — performance tuning packages (sysctl, cpu, gpu, audio, network, io)
+
+## What We Fork
+
+### From DankLinux/DMS (foundation)
+- **Quickshell-based desktop shell** → rebranded as TMS
+- **Go backend + CLI** (`dms` → `tacharchy`)
+- **Cross-distro packaging** — Arch, Fedora, Debian, Ubuntu, openSUSE, Gentoo, NixOS
+- **Multi-compositor support** — niri, Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM
+- **Material You theming** — matugen + dank16 dynamic wallpaper → palette
+- **TUI installer** — charm-based interactive install with compositor/shell selection
+- **IPC system** — `tacharya ipc call ...` for programmatic control
+- **Plugin system** — DMS plugin API kept identical for compatibility
+- **Greeter support** — GDM/greetd integration
+- **Doctor/diagnostics** — `tacharya doctor`
+
+### From Omarchy (hardware + apps)
+- **Hardware detection & fixes** — per-vendor, per-model (ASUS ROG, Framework, Surface, Apple T2, Dell XPS, Intel, NVIDIA, Broadcom, Tuxedo)
+- **Migration system** — timestamp-based config migration tracking
+- **App ecosystem** — webapp system, per-app configs (ghostty, kitty, alacritty, waybar, tmux, lazygit, fastfetch, starship)
+- **Theme library** — 19 static themes in colors.toml format
+- **Package management CLI** — distro-agnostic package install/remove/present/missing
+- **Snapshot/rollback** — Limine bootloader + snapper btrfs snapshots
+- **Battery management** — capacity, monitor, hibernation
+- **Hot-reload** — `tacharya refresh-*` for individual app configs on theme change
+- **Hidden desktop entries** — clean up app launchers
+- **Custom desktop icons** — for common apps
+
+### Original (performance tuning)
+- **tacharchy-sysctl** — kernel parameter tuning with documented reasoning
+- **tacharchy-cpu** — Intel hybrid P/E core tuning, AMD preferred cores
+- **tacharchy-gpu** — NVIDIA/AMD/Intel driver optimizations
+- **tacharchy-audio** — PipeWire realtime scheduling, CPU affinity
+- **tacharchy-network** — BBR congestion control, NIC tuning
+- **tacharchy-io** — I/O scheduler auto-detection (NVMe/SSD/HDD)
+- **tacharchy-detect** — hardware detection and recommendation engine
+- **tacharchy-foundation** — meta-package depending on all above
+
+## CLI
+
+```
+tacharchy                          # Status overview
+
+tacharchy install                  # TUI installer
+tacharchy update                   # Update system (migrations + packages)
+tacharchy update --firmware        # + firmware updates
+
+tacharchy detect                   # Hardware report + recommendations
+
+tacharchy theme list               # List themes
+tacharchy theme set <name|path>    # Apply static or dynamic (wallpaper) theme
+tacharchy theme custom             # Create custom theme
+
+tacharchy status                   # Current tuning state
+tacharchy benchmark                # Before/after performance comparison
+
+tacharya config                    # Interactive configuration
+tacharya config export             # Export config as dotfiles
+tacharya config import             # Import config
+
+tacharchy snapshot                 # Btrfs snapshot
+tacharchy snapshot rollback        # Roll back
+
+tacharya ipc call <command>        # Programmatic shell control
+tacharya doctor                    # Diagnostic check
+tacharya migrate                   # Run pending migrations
+
+tacharchy remove                   # Clean uninstall
+```
 
 ## Components
 
-### Packages (AUR)
+### Packages
 
-| Package | Purpose | Dependencies |
+| Package | Purpose | Source |
 |---|---|---|
-| `tacharchy-foundation` | Meta-package, depends on all below | all tacharchy-* packages |
-| `tacharchy-sysctl` | Kernel parameter tuning | none |
-| `tacharchy-audio` | PipeWire realtime scheduling | pipewire, rtkit |
-| `tacharchy-gpu` | GPU driver optimizations | NVIDIA/AMD/Intel drivers |
-| `tacharchy-network` | Network stack tuning | none |
-| `tacharchy-io` | I/O scheduler udev rules | systemd, udev |
-| `tacharchy-cpu` | CPU scheduler tuning | none |
-| `tacharchy-detect` | Hardware detection script | bash, coreutils |
+| `tacharchy-sysctl` | Kernel parameter tuning | Original |
+| `tacharchy-audio` | PipeWire realtime scheduling | Original |
+| `tacharchy-gpu` | GPU driver optimizations | Original + Omarchy hw detection |
+| `tacharchy-network` | Network stack tuning | Original |
+| `tacharchy-io` | I/O scheduler udev rules | Original |
+| `tacharchy-cpu` | CPU scheduler tuning | Original + Omarchy hw detection |
+| `tacharchy-detect` | Hardware detection | Original + Omarchy hw detection |
+| `tacharchy-foundation` | Meta-package | Original |
+| `tms-shell` | Desktop shell (Quickshell) | Fork: DMS |
+| `tms-greeter` | Login greeter | Fork: DMS |
 
-### Installer
+### Installer Flow
 
 ```
-boot.sh (entry point)
-  └── install.sh
-        ├── preflight/      System checks (Arch, sudo, network, space)
-        ├── packaging/      Package installation (foundation + user selections)
-        ├── config/
-        │   ├── hardware/   Hardware-specific fixes (fork from Omarchy)
-        │   ├── compositors/ Compositor config templates
-        │   ├── themes/     Theme application engine
-        │   └── system/     System-wide config (sysctls, udev, limits)
-        ├── login/          Login manager setup (SDDM)
-        └── post-install/   First-run wizard
+curl tacharchy.sh | sh
+  → Preflight (distro detection, sudo, network, disk space)
+  → Hardware detection (Omarchy's per-vendor scripts)
+  → Compositor selection (niri, Hyprland, Sway, labwc, etc.)
+  → Desktop shell (TMS, Waybar, or none)
+  → Theme selection (static or dynamic)
+  → Performance tuning (tacharchy-foundation)
+  → Optional apps (webapps, dev tools, etc.)
+  → First-run wizard
+  → Post-install
 ```
 
 ### Theme System
 
-Themes use a `colors.toml` format:
+Two theme engines, one application layer:
 
-```toml
-[colors]
-primary = "#FF6B00"
-secondary = "#1a1a2e"
-surface = "#0d1117"
-text = "#FFFFFF"
-muted = "#8b949e"
+1. **Dynamic (matugen)** — wallpaper → Material You palette, applied to TMS shell, GTK, Qt, terminals, editors
+2. **Static (colors.toml)** — 19 pre-built themes from Omarchy, same application layer
 
-[fonts]
-mono = "JetBrainsMono Nerd Font"
-sans = "Inter"
-
-[options]
-light = false  # or true for light mode
-```
-
-Theme application reads `colors.toml` and generates configs for:
-- Compositor (border colors, background)
-- Terminal (color scheme)
-- Editor (neovim, VS Code)
-- Bar (Waybar, swaybar)
-- System tools (btop, starship)
-- GTK/Qt themes
-- Cursor/pointer colors
+Both feed into the same theme application pipeline. User picks whichever they prefer.
 
 ### Hardware Detection
 
-Forked from Omarchy's modular per-vendor system:
+Automatic per-vendor configuration:
 
-```
-hardware/
-├── detect-cpu.sh        # Intel hybrid, AMD preferred cores
-├── detect-gpu.sh        # NVIDIA, AMD, Intel
-├── detect-audio.sh      # PCI latency, audio devices
-├── detect-storage.sh    # NVMe, SSD, HDD
-├── detect-display.sh    # Monitors, VRR, multi-head
-├── detect-peripherals.sh # Keyboard, touchpad, mouse, Bluetooth
-├── intel/
-│   ├── hybrid-cores.sh  # P-core/E-core EPP tuning
-│   └── video-accel.sh   # VA-API, VAAPI
-├── nvidia/
-│   ├── drm-modeset.sh   # DRM modeset, fbdev
-│   ├── vram-manage.sh   # VRAM leak prevention
-│   └── power.sh         # Power management
-├── asus/
-├── dell/
-├── framework/
-└── apple/
-```
+| Vendor | Detection | Fixes |
+|---|---|---|
+| Intel | CPU, GPU, WiFi 7, IPU camera | Video accel, LPMD, thermald, PTL kernel |
+| NVIDIA | GPU architecture (Turing+ vs legacy) | Correct driver, KMS, env vars, VRAM fix |
+| AMD | GPU, preferred cores | Video accel, OverDrive |
+| Apple | T2 MacBooks | SPI keyboard, suspend NVMe, T2 audio |
+| ASUS | ROG laptops | Audio mixer, mic, keyboard RGB |
+| Framework | F13, F16 | AMD audio input, QMK HID |
+| Dell | XPS | Haptic touchpad, PTL display |
+| Surface | Surface devices | Keyboard fix |
+| Broadcom | WiFi chips | Driver install |
+| Tuxedo | Backlight | Fix backlight control |
 
-## File Locations
+## Plugin Compatibility
 
-All Tacharchy files live in predictable locations:
+TMS maintains full API compatibility with DMS plugins. All existing DMS plugins work without modification. The plugin registry at plugins.danklinux.com is supported, and Tacharchy may host its own registry in the future.
 
-| Path | Contents |
-|---|---|
-| `/etc/tacharchy/` | System-wide config, sysctl drop-ins, udev rules |
-| `/usr/share/tacharchy/` | Install scripts, templates, hardware detection |
-| `/usr/share/tacharchy/themes/` | Theme packs |
-| `~/.config/tacharchy/` | User-specific overrides (never touches other dotfiles) |
-| `~/.local/share/tacharchy/` | Runtime data, migrations, logs |
+## Cross-Distro Support
 
-## Reversibility
+| Distro | Package Format | Status |
+|---|---|---|
+| Arch Linux | AUR + pacman | Phase 1 |
+| Fedora | COPR | Phase 2 |
+| Debian | OBS / apt | Phase 2 |
+| Ubuntu | PPA / Launchpad | Phase 2 |
+| openSUSE | OBS / zypper | Phase 2 |
+| Gentoo | Ebuild | Phase 3 |
+| NixOS | Flake / home-manager | Phase 3 |
 
-All changes are tracked:
+## Philosophy
 
-```bash
-tacharchy-list    # Show all applied changes
-tacharchy-undo    # Remove all tacharchy modifications
-tacharchy-status  # Check what's applied and what's not
-```
+1. **Performance tuning is the core value** — everything else is borrowed and improved
+2. **We give back your freedom** — compositor, shell, theme, apps: your choice
+3. **No bullshit** — no censorship, no politics, no gatekeeping
+4. **Don't reinvent** — fork what works, improve what doesn't, build only what's missing
+5. **Everything documented with reasoning** — every sysctl, every fix, every choice
+6. **Everything reversible** — one command to remove all traces
+7. **Plugin compatible** — DMS plugins work out of the box
 
-Uninstalling the packages removes the config files. The undo command reverses any changes to existing system files.
+## Sources
 
-## Design Decisions
-
-### Why Arch-only for Phase 1?
-
-- Simplifies development — one package format, one package manager, one set of configs
-- Arch users are comfortable with system configuration
-- AUR provides easy package distribution
-- Cross-distro support (Phase 2+) uses the same config logic, different packaging
-
-### Why fork Omarchy instead of starting from scratch?
-
-- Omarchy's install framework is battle-tested (thousands of users)
-- Hardware detection covers 10+ vendors with specific fixes
-- Theme system with 19 themes already exists
-- Migration system for rolling updates
-- MIT licensed
-- We strip the forced choices (Hyprland, packages) and add what's missing (performance)
-
-### Why not just use CachyOS sysctls directly?
-
-We do — with documentation. CachyOS sets these values but doesn't explain why. Every value in Tacharchy is documented with reasoning, tradeoffs, and applicability. Users can understand and modify their system.
-
-### Why shell scripts instead of a compiled tool?
-
-- Shell scripts are transparent — users can read exactly what's being done
-- No build toolchain required
-- Easy to modify and contribute to
-- Omarchy proved this approach works at scale
-- Can be wrapped in a Rust/Go binary later for performance if needed
+- [DankLinux/DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) — shell, installer, cross-distro
+- [Omarchy](https://github.com/basecamp/omarchy) — hardware detection, themes, migrations, app configs
+- [CachyOS](https://github.com/CachyOS/CachyOS-Settings) — sysctl tuning inspiration
