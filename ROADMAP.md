@@ -60,7 +60,7 @@ Port Omarchy's per-vendor hardware detection scripts into the Go backend.
 
 ### 1d: Theme System
 
-Dual engine: matugen (dynamic from wallpaper) + colors.toml (static from Omarchy).
+matugen: Material You palette generation from wallpaper or seed color.
 
 - [ ] Port Omarchy's 19 colors.toml themes
 - [ ] Ensure matugen dynamic theming works through TMS
