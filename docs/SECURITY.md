@@ -58,14 +58,6 @@ Required for PipeWire realtime scheduling. See [docs/audio.md](audio.md).
 sudo usermod -aG audio $USER
 ```
 
-## Secure Boot
-
-Not configured by default. Users with Secure Boot enabled should:
-1. Enroll their own keys via `sbctl`
-2. Or disable Secure Boot in firmware
-
-Tacharchy does not force Secure Boot — it's the user's choice.
-
 ## Kernel Hardening
 
 Tacharchy does not apply aggressive kernel hardening by default. The following are documented for users who want them:
