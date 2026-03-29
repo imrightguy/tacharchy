@@ -1,134 +1,336 @@
-# Tacharchy
+```
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║   ████████ ██    ██ ██████  ███████ ██████  ████████ ███████  ║
+║   ██        ██  ██  ██   ██ ██      ██   ██    ██    ██      ║
+║   █████     ████   ██████  █████   ██████     ██    ███████  ║
+║   ██        ██  ██  ██   ██ ██      ██   ██    ██         ██  ║
+║   ████████ ██    ██ ██   ██ ███████ ██   ██    ██    ███████  ║
+║                                                               ║
+║   ███████ ██      ██ ██    ██ ███████ ██████                   ║
+║   ██      ██      ██ ██    ██      ██ ██   ██                  ║
+║   ███████ ██      ██ ██    ██      ██ ██████                   ║
+║        ██ ██      ██ ██    ██      ██ ██                       ║
+║   ███████ ████████   ██████       ██ ██                       ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+```
 
-<h3 align="center">ταχύς + ἀναρχία — Fast Freedom</h3>
+![Status](https://img.shields.io/badge/status-design--phase-orange)
+![Phase](https://img.shields.io/badge/phase-research--planning-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Arch](https://img.shields.io/badge/arch-linux-blue)
+![FOSS](https://img.shields.io/badge/foss-defaults-brightgreen)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/color-dark_orange-FF6B00?style=for-the-badge" alt="Dark Orange">
-</p>
+# Tacharchy: Linux System with Built-in Save/Restore
 
-<p align="center">
-  <strong>Performance-tuned Linux desktop. Fork DMS as foundation, absorb Omarchy's knowledge natively, build only what's missing.</strong>
-</p>
-
-<p align="center">
-  <a href="#what-is-tacharchy">About</a> ·
-  <a href="#install">Install</a> ·
-  <a href="ROADMAP.md">Roadmap</a> ·
-  <a href="docs/ARCHITECTURE.md">Architecture</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a>
-</p>
+**Status:** 🎨 Design & Research Phase | **Target:** Linux users who value their time
 
 ---
 
-## What is Tacharchy?
+## What Is Tacharchy?
 
-Tacharchy is a complete Linux desktop environment built on three pillars:
+**Tacharchy** is a complete Linux system with a built-in save/restore for your entire setup.
 
-- **[DankLinux/DMS](https://github.com/AvengeMedia/DankMaterialShell)** — Quickshell-based desktop shell, Go backend, cross-distro packaging, multi-compositor support, plugin system
-- **[Omarchy](https://github.com/basecamp/omarchy)** — Hardware detection, migration system, theme library, app ecosystem
-- **Performance tuning layer (original)** — sysctl, CPU scheduler, GPU, audio, network, I/O optimization
+```
+Part 1: Tacharchy ISO      → Complete Arch-based distro
+Part 2: Universal Script   → Works on ANY Linux distro
+Part 3: Profile System     → Save/restore everything (shared by both)
+```
 
-We don't reinvent. We take what works from the best projects, improve what's broken, and fill the gaps nobody else fills.
+### The Problem
 
-**TMS (Tacharchy Material Shell)** is our desktop shell, forked from DMS with full plugin compatibility.
+Reinstalling Linux takes forever:
+- Remembering 200+ packages
+- Reconfiguring compositors, terminals, themes
+- Hunting down dotfiles from backups
+- Setting up services, preferences, state
+- **8+ hours to get back to work**
 
-## Install
+### The Solution
+
+```bash
+# Fresh install from Tacharchy ISO OR
+# Add Tacharchy layer to any distro
+
+# Save your setup anytime
+tacharchy profile save my-dev-setup
+
+# Reinstall from scratch
+
+# Restore everything
+tacharchy restore my-dev-setup
+
+# 10 minutes later, you're back to work
+```
+
+**No more package hunting. No more config archaeology. No more wasted days.**
+
+---
+
+## 🎯 Two Ways to Use Tacharchy
+
+### **Option 1: Tacharchy ISO** (Complete Arch System)
+
+Boot the ISO, install a complete Arch-based distro:
+
+```bash
+# Flash USB, boot, install
+# Choose: Basic | Dev | Gamer | Creative | Restore Profile | Custom
+
+# What you get (Basic):
+✓ Arch Linux + Hyprland/Niri + DMS desktop shell
+✓ FOSS browser (Chromium), password manager (KeePassXC)
+✓ Messengers (Telegram, WhatsApp), code viewer (Opencode)
+✓ Everything FOSS, no proprietary surprises
+✓ System works immediately
+```
+
+**Best for:** Fresh installs, new PCs, bare metal, complete system wipes
+
+### **Option 2: Universal Installer** (Any Distro)
+
+Already running Linux? Add Tacharchy layer on top:
 
 ```bash
 curl -fsSL https://install.tacharchy.com | sh
+
+# Works on: Ubuntu, Fedora, Debian, Arch, Manjaro, EndeavourOS, etc.
+# Detects your distro, adapts package manager
+# Installs Tacharchy layer + profile system
 ```
 
-One command. Detects your distro and hardware, installs everything automatically.
+**Best for:** Testing without wiping, adding to working systems, non-Arch distros
 
-Currently supports: Arch Linux. Fedora, Debian, Ubuntu, openSUSE coming soon.
+---
 
-## What You Get
+## ✨ What Makes Tacharchy Different
 
-### Performance Tuning (our unique value)
+### 🎯 **FOSS Defaults, No Surprises**
+- Chromium (not Chrome)
+- KeePassXC (not 1Password)
+- Telegram, WhatsApp Desktop
+- Opencode (code viewer)
+- **Everything open source by default**
 
-System-level tuning nobody else provides:
+### 🔄 **Portable Profiles**
+- Save on Arch → Restore on Fedora ✓
+- Save on desktop → Restore on laptop ✓
+- Save on NVIDIA → Restore on AMD ✓
+- **Profiles work across all delivery methods and hardware**
 
-- **CPU** — Intel hybrid P/E core awareness, per-core EPP tuning, AMD preferred cores
-- **Audio** — PipeWire realtime priority, CPU affinity, OOM protection
-- **GPU** — NVIDIA/AMD/Intel driver optimization, compositor-specific fixes
-- **Network** — BBR congestion control, NIC ring buffers, backlog tuning
-- **I/O** — Auto-detected scheduler (NVMe→none, SSD→mq-deadline, HDD→bfq)
-- **Memory** — Swap management, dirty page tuning, VFS cache optimization
+### 🛡️ **Safe by Design**
+- Automatic backups before restore
+- Dry-run mode (see what changes before applying)
+- Rollback if anything breaks
+- Clear warnings, no silent destruction
 
-Every value documented with reasoning. See `docs/` for the full reference.
+---
 
-### Desktop Shell (TMS)
+## 🚀 Quick Feature Overview
 
-Forked from DMS. Replaces waybar + swaylock + swayidle + mako + fuzzel + polkit with one unified shell:
+| Feature | Description |
+|---------|-------------|
+| **Complete Arch Distro** | Tacharchy ISO: Arch + Omarchy installer + DMS + profile system |
+| **Universal Installer** | Works on ANY Linux distro (Ubuntu, Fedora, Debian, Arch, etc.) |
+| **Profile System** | Save/restore entire system state (packages, configs, services, preferences) |
+| **FOSS Defaults** | Basic install: Chromium, KeePassXC, Telegram, WhatsApp, Opencode |
+| **Preset Profiles** | Dev (nvim, git, docker), Gamer (Steam, Lutris), Creative (Blender, Krita) |
+| **Hardware-Agnostic** | Profiles work across different machines, GPUs, monitor setups |
+| **DMS Integration** | Uses DankMaterialShell desktop shell (consumed as-is, not forked) |
 
-- Dynamic Material You theming from any wallpaper
-- Control center (network, Bluetooth, audio, display, night mode)
-- Spotlight launcher (apps, files, emojis, windows, calculator, commands)
-- Smart notifications with grouping
-- Media integration (MPRIS, calendar, weather, clipboard)
-- Plugin system (DMS plugins work out of the box)
+---
 
-### Multi-Compositor
+## 🎮 The "Skill Tree" Philosophy
 
-niri, Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM — your choice.
+> "Like Path of Exile's skill tree: dead simple at first glance, endlessly deep when you look closer."
 
-### Hardware Detection
+**Level 1:** `tacharchy restore my-setup` → Done. System back.
 
-Per-vendor, per-model fixes: Intel, NVIDIA, AMD, Apple T2, ASUS ROG, Framework, Dell XPS, Surface, Broadcom, Tuxedo.
+**Level 2:** Custom disk layouts, multiple profiles, compositor switching
 
-### Cross-Distro (Phase 2+)
+**Level 3:** Custom ISO generation, hooks, credential automation, profile sharing
 
-| Distro | Format | Status |
-|---|---|---|
-| Arch Linux | AUR | ✅ Phase 1 |
-| Fedora | COPR | Phase 2 |
-| Debian | OBS | Phase 2 |
-| Ubuntu | PPA | Phase 2 |
-| openSUSE | OBS | Phase 2 |
+**You never see Level 2/3 unless you ask.**
 
-## CLI
+---
 
-```bash
-tacharchy                          # Status overview
-tacharchy install                  # TUI installer
-tacharchy update                   # Update system
-tacharchy detect                   # Hardware report
-tacharchy theme set tokyo-night    # Apply theme
-tacharchy theme set /path/to/wp    # Dynamic palette from wallpaper
-tacharya status                    # Tuning state
-tacharya benchmark                 # Before/after comparison
-tacharya ipc call spotlight toggle # Programmatic control
-tacharya doctor                    # Diagnostics
-tacharya remove                    # Clean uninstall
+## 📁 The Three Parts
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    TACHARCHY SYSTEM                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Part 1: Tacharchy ISO (Arch-based Distro)               │
+│  ├── Forked Omarchy installer                             │
+│  ├── DMS desktop shell integrated                        │
+│  ├── Profile system built-in                                │
+│  └── Arch-specific optimizations                           │
+│                                                             │
+│  Part 2: Universal Installer Script                         │
+│  ├── Works on ANY Linux distro                             │
+│  ├── Detects distro, adapts package manager               │
+│  ├── Installs Tacharchy layer on top                        │
+│  └── Profile system built-in                                │
+│                                                             │
+│  Part 3: Profile System (Shared by both)                    │
+│  ├── Save current setup as profile                         │
+│  ├── Restore from profile (on any distro)                    │
+│  ├── Portable across all delivery methods                     │
+│  └── Hardware-agnostic                                     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Philosophy
+---
 
-1. **Performance tuning is our unique contribution** — the piece nobody else provides, baked into a complete desktop
-2. **We give back your freedom** — compositor, shell, theme, apps: your choice
-3. **No bullshit** — no censorship, no politics, no gatekeeping
-4. **Don't reinvent** — fork what works, improve what doesn't, build only what's missing
-5. **Everything documented with reasoning**
-6. **Everything reversible** — one command to remove all traces
-7. **Plugin compatible** — DMS plugins work out of the box
-8. **Wayland only**
+## 🎯 What Tacharchy Is NOT
 
-## Name
+- ❌ **Not** NixOS — We use vanilla Arch, KISS principle
+- ❌ **Not** just a restore tool — It's a complete system (ISO) OR layer (script)
+- ❌ **Not** just dotfiles — We capture packages, services, state, preferences
+- ❌ **Not** forking DMS — We consume DankMaterialShell as-is, extend via plugins
+- ❌ **Not** Arch-only — Universal installer works on ANY distro
 
-**Tacharchy** — from Greek *ταχύς* (tachys, "swift, fast") + *ἀναρχία* (anarchia, "without rulers, self-governance").
+---
 
-Fast freedom.
+## 📚 Documentation
 
-## Status
+| Document | What It Covers |
+|----------|----------------|
+| **[COMPLETE-ARCHITECTURE.md](COMPLETE-ARCHITECTURE.md)** | Full 3-part architecture, install flows, package abstraction |
+| **[DESIGN.md](DESIGN.md)** | Core philosophy, rules, anti-patterns |
+| **[DESIGN-DIRECTION.md](DESIGN-DIRECTION.md)** | FOSS defaults, install flows, package decisions |
+| **[research.md](research.md)** | Comprehensive research (Chezmoi, yadm, archinstall, Timeshift, Nix comparison) |
+| **[RESEARCH-OMARCHY.md](RESEARCH-OMARCHY.md)** | Omarchy launcher/installer analysis |
+| **[DANKLINUX-INSTALLER-ANALYSIS.md](DANKLINUX-INSTALLER-ANALYSIS.md)** | Safety patterns, backups, UI design |
+| **[CURRENT-SYSTEM-MODEL.md](CURRENT-SYSTEM-MODEL.md)** | Reference system (179 packages, 4GB configs) |
 
-🚧 **Early development.** Phase 1a (performance tuning packages) complete. Forking DMS and Omarchy next.
+---
 
-## License
+## 🚧 Current Status
 
-MIT
+**This repository is in the design and research phase.**
+
+No implementation code exists yet. This is a knowledge base capturing:
+- ✅ Design philosophy and requirements
+- ✅ Research on existing solutions
+- ✅ Complete architecture specification
+- ✅ Integration approach (Omarchy + DMS)
+- ✅ Safety patterns from DankLinux installer
+- ⏳ Implementation (not started)
+
+**When will implementation begin?**
+- Architecture is complete
+- Design decisions are documented
+- Looking for community feedback before writing code
+
+---
+
+## 🤝 Contributing
+
+**Currently:** Design feedback and discussion welcome!
+
+**Upcoming:** Implementation planning will begin after design phase locks.
+
+**Important:** We do NOT fork DMS (DankMaterialShell) unless absolutely necessary. Extend through plugins first.
+
+---
+
+## 🎯 Who Is This For?
+
+- ✅ Linux users who reinstall frequently (any distro)
+- ✅ People who tinker with their setup and break things
+- ✅ Developers who want reproducible environments
+- ✅ Users who value FOSS software and transparency
+- ✅ Anyone who's ever spent days getting their system back after a reinstall
+- ✅ People who want to try different distros but keep their setup
+
+---
+
+## 📊 Quick Stats (Reference System)
+
+Based on Christopher's Omarchy setup (the model):
+- **179 packages** explicitly installed
+- **4GB** of dotfiles and configs
+- **NVIDIA** GPU, multi-monitor setup
+- **Restoration target:** ~10 minutes (vs. 8+ hours manual)
+
+---
+
+## 🎨 Design Principles
+
+1. **Simple first, complex never** — Level 1 just works, deeper features opt-in
+2. **Respect the user's time** — No blocking prompts for deferrable things
+3. **Don't defuse the bomb** — Never interrupt important work
+4. **Progressive disclosure** — Show options when asked, hide by default
+5. **Durable by default** — Everything important lives off root filesystem
+6. **Arch-first, not Arch-only** — Vanilla Arch, portable principles
+7. **Clean integration** — Tacharchy adds alongside, never patches base system
+
+---
+
+## 🗺️ Roadmap
+
+### Phase 1: Core Profile System (MVP)
+- [ ] Profile save (packages, configs, services, state)
+- [ ] Profile restore (with backups, warnings, rollback)
+- [ ] Dry-run mode
+- [ ] Profile list/delete
+
+### Phase 2: Tacharchy ISO (Arch Distro)
+- [ ] Fork Omarchy installer
+- [ ] Integrate DMS desktop shell
+- [ ] Add Tacharchy branding
+- [ ] Build ISO with archiso
+- [ ] Test in VM
+
+### Phase 3: Universal Installer (Multi-Distro)
+- [ ] Detect distro (Ubuntu, Fedora, Debian, Arch)
+- [ ] Adapt package manager (apt, dnf, pacman, zypper)
+- [ ] Map packages to distro equivalents
+- [ ] Install DMS (if compatible) or skip
+- [ ] Deploy compatible configs
+
+### Phase 4: Advanced Features
+- [ ] Package browser (search repos)
+- [ ] Profile inheritance (base + customizations)
+- [ ] Profile versioning
+- [ ] Profile sharing (export/import)
+- [ ] Community profiles
+
+---
+
+## 💡 Why "Tacharchy"?
+
+**Tachy-** (speed) + **-archy** (Arch Linux)
+
+Speed of restoration + Arch Linux philosophy = Tacharchy
+
+Also sounds cool.
+
+---
+
+## 📝 License
+
+MIT License — See [LICENSE](LICENSE) file.
+
+---
+
+## 🌟 Star Us If...
+
+- You've ever spent days reinstalling Linux
+- You believe in FOSS defaults
+- You want portable Linux setups
+- You want to try different distros without losing your setup
+- You like the idea of 10-minute restoration vs 8-hour setups
+
+**Star the repo to follow progress!** ⭐
 
 ---
 
 <p align="center">
-  <sub>Don't reinvent. Improve.</sub>
+<strong>Tacharchy — Linux system with built-in save/restore for your entire setup.</strong><br>
+<strong>Complete Arch distro OR universal layer on any distro. Your choice.</strong>
 </p>
