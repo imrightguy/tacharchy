@@ -1,0 +1,339 @@
+#!/bin/bash
+# Tacharchy CLI - manage your Tacharchy installation
+
+set -euo pipefail
+
+VERSION="0.1.0-alpha"
+TACHARCHY_PATH="${TACHARCHY_PATH:-$HOME/.local/share/tacharchy}"
+TACHARCHY_BIN="$TACHARCHY_PATH/bin"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Print usage information
+usage() {
+  cat << EOF
+Tacharchy CLI v${VERSION}
+
+Manage your Tacharchy installation - performance tuning, DMS integration, and system diagnostics.
+
+USAGE:
+  tacharchy <COMMAND> [OPTIONS]
+
+COMMANDS:
+  status      Show current tuning state and DMS integration
+  benchmark   Run before/after performance comparison
+  migrate     Apply timestamp-based migrations
+  help        Show this help message
+  version     Show version information
+
+OPTIONS:
+  -h, --help  Show help for a specific command
+
+For more information, visit: https://github.com/imrightguy/tacharchy
+EOF
+}
+
+# Print help for a specific command
+command_help() {
+  local cmd="$1"
+  case "$cmd" in
+    status)
+      cat << EOF
+tacharchy status - Show current tuning state
+
+USAGE:
+  tacharchy status
+
+Shows:
+  - Tacharchy version
+  - Installed tuning packages
+  - Performance tuning status (sysctls, audio, GPU, network, I/O, CPU)
+  - DMS integration status
+  - Hardware detection summary
+EOF
+      ;;
+    benchmark)
+      cat << EOF
+tacharchy benchmark - Run performance comparison
+
+USAGE:
+  tacharchy benchmark
+
+Runs a set of benchmarks to measure system performance before and after tuning.
+Results are saved to ~/.local/share/tacharchy/benchmarks/
+EOF
+      ;;
+    migrate)
+      cat << EOF
+tacharchy migrate - Apply timestamp-based migrations
+
+USAGE:
+  tacharchy migrate
+
+Applies any pending migrations to bring your Tacharchy installation up to date.
+EOF
+      ;;
+    *)
+      usage
+      ;;
+  esac
+}
+
+# Show current status
+status() {
+  echo -e "${BLUE}=== Tacharchy Status ===${NC}\n"
+
+  # Tacharchy version
+  echo "Version: ${VERSION}"
+  echo "Installation: ${TACHARCHY_PATH}"
+  echo ""
+
+  # Check tuning packages
+  echo -e "${GREEN}=== Performance Tuning Packages ===${NC}"
+  local packages=(
+    "tacharchy-foundation"
+    "tacharchy-sysctl"
+    "tacharchy-audio"
+    "tacharchy-gpu"
+    "tacharchy-network"
+    "tacharchy-io"
+    "tacharchy-cpu"
+    "tacharchy-detect"
+  )
+
+  for pkg in "${packages[@]}"; do
+    if pacman -Qi "$pkg" &>/dev/null; then
+      local version=$(pacman -Qi "$pkg" | grep Version | awk '{print $3}')
+      echo -e "  ${GREEN}✓${NC} ${pkg} (${version})"
+    else
+      echo -e "  ${RED}✗${NC} ${pkg} (not installed)"
+    fi
+  done
+  echo ""
+
+  # Check sysctls
+  echo -e "${GREEN}=== Sysctl Status ===${NC}"
+  if [[ -f /etc/sysctl.d/99-tacharchy-sysctl.conf ]]; then
+    echo -e "  ${GREEN}✓${NC} Tacharchy sysctls loaded"
+  else
+    echo -e "  ${RED}✗${NC} Tacharchy sysctls not loaded"
+  fi
+  echo ""
+
+  # Check audio
+  echo -e "${GREEN}=== Audio Tuning ===${NC}"
+  if [[ -f /etc/security/limits.d/20-tacharchy-audio.conf ]]; then
+    echo -e "  ${GREEN}✓${NC} Audio limits configured"
+  else
+    echo -e "  ${RED}✗${NC} Audio limits not configured"
+  fi
+
+  if groups "$USER" | grep -q '\baudio\b'; then
+    echo -e "  ${GREEN}✓${NC} User in audio group"
+  else
+    echo -e "  ${YELLOW}⚠${NC} User not in audio group"
+  fi
+  echo ""
+
+  # Check network
+  echo -e "${GREEN}=== Network Tuning ===${NC}"
+  if [[ -f /etc/sysctl.d/99-tacharchy-network.conf ]]; then
+    echo -e "  ${GREEN}✓${NC} Network sysctls loaded"
+  else
+    echo -e "  ${RED}✗${NC} Network sysctls not loaded"
+  fi
+
+  if lsmod | grep -q tcp_bbr; then
+    echo -e "  ${GREEN}✓${NC} BBR congestion control loaded"
+  else
+    echo -e "  ${RED}✗${NC} BBR congestion control not loaded"
+  fi
+  echo ""
+
+  # Check I/O
+  echo -e "${GREEN}=== I/O Scheduler ===${NC}"
+  if [[ -f /etc/udev/rules.d/60-tacharchy-io-scheduler.rules ]]; then
+    echo -e "  ${GREEN}✓${NC} I/O scheduler rules installed"
+  else
+    echo -e "  ${RED}✗${NC} I/O scheduler rules not installed"
+  fi
+  echo ""
+
+  # Check DMS
+  echo -e "${GREEN}=== DMS Integration ===${NC}"
+  if command -v dms &>/dev/null; then
+    local dms_version=$(dms --version 2>/dev/null || echo "unknown")
+    echo -e "  ${GREEN}✓${NC} DMS installed (${dms_version})"
+  else
+    echo -e "  ${RED}✗${NC} DMS not installed"
+  fi
+
+  if [[ -d "$HOME/.config/dms" ]]; then
+    echo -e "  ${GREEN}✓${NC} DMS config directory exists"
+  else
+    echo -e "  ${YELLOW}⚠${NC} DMS config directory not found (will be created on first run)"
+  fi
+  echo ""
+
+  # Hardware detection
+  echo -e "${GREEN}=== Hardware Detection ===${NC}"
+  if command -v tacharchy-detect &>/dev/null; then
+    tacharchy-detect --json 2>/dev/null | jq -r '
+      if .cpu then "CPU: \(.cpu.vendor) \(.cpu.model)" else "CPU: unknown" end,
+      if .gpu then "GPU: \(.gpu.vendor) \(.gpu.model)" else "GPU: unknown" end,
+      "RAM: \(.ram // "unknown")"
+    ' 2>/dev/null || echo "  Hardware detection available (run 'tacharchy-detect' for details)"
+  else
+    echo -e "  ${YELLOW}⚠${NC} tacharchy-detect not available"
+  fi
+}
+
+# Run benchmarks
+benchmark() {
+  echo -e "${BLUE}=== Tacharchy Benchmark ===${NC}\n"
+
+  local benchmark_dir="$TACHARCHY_PATH/benchmarks"
+  mkdir -p "$benchmark_dir"
+
+  local timestamp=$(date +%Y%m%d_%H%M%S)
+  local benchmark_file="$benchmark_dir/benchmark_${timestamp}.txt"
+
+  echo "Running benchmarks..."
+  echo "Timestamp: $(date)" > "$benchmark_file"
+  echo "" >> "$benchmark_file"
+
+  # CPU benchmark
+  echo -e "${YELLOW}CPU Benchmark (dd write test)...${NC}"
+  local cpu_bench=$(dd if=/dev/zero of=/tmp/tacharchy-benchmark bs=1M count=1024 conv=fdatasync 2>&1 | grep copied)
+  echo "$cpu_bench" >> "$benchmark_file"
+  rm -f /tmp/tacharchy-benchmark
+  echo "$cpu_bench"
+  echo ""
+
+  # Memory benchmark
+  echo -e "${YELLOW}Memory Benchmark...${NC}"
+  local mem_total=$(free -h | grep Mem | awk '{print $2}')
+  local mem_available=$(free -h | grep Mem | awk '{print $7}')
+  echo "Total Memory: $mem_total, Available: $mem_available" >> "$benchmark_file"
+  echo "Total Memory: $mem_total, Available: $mem_available"
+  echo ""
+
+  # Disk benchmark (read)
+  echo -e "${YELLOW}Disk Benchmark (read)...${NC}"
+  if command -v hdparm &>/dev/null; then
+    local disk_bench=$(sudo hdparm -Tt /dev/sda 2>/dev/null | grep -E "Timing|Cache" | tail -2)
+    echo "$disk_bench" >> "$benchmark_file"
+    echo "$disk_bench"
+  else
+    echo "hdparm not available, skipping disk benchmark" >> "$benchmark_file"
+    echo "hdparm not available, skipping disk benchmark"
+  fi
+  echo ""
+
+  # Network benchmark
+  echo -e "${YELLOW}Network Benchmark (ping test)...${NC}"
+  if command -v ping &>/dev/null; then
+    local net_bench=$(ping -c 4 8.8.8.8 2>/dev/null | tail -1)
+    echo "$net_bench" >> "$benchmark_file"
+    echo "$net_bench"
+  else
+    echo "ping not available, skipping network benchmark" >> "$benchmark_file"
+    echo "ping not available, skipping network benchmark"
+  fi
+  echo ""
+
+  # Summary
+  echo -e "${GREEN}=== Benchmark Complete ===${NC}"
+  echo "Results saved to: $benchmark_file"
+  echo ""
+  echo "To compare with previous benchmarks:"
+  echo "  ls -la $benchmark_dir/"
+}
+
+# Apply migrations
+migrate() {
+  echo -e "${BLUE}=== Tacharchy Migrations ===${NC}\n"
+
+  local migrations_dir="$TACHARCHY_PATH/migrations"
+  local applied_file="$TACHARCHY_PATH/migrations-applied.txt"
+
+  mkdir -p "$migrations_dir"
+  touch "$applied_file"
+
+  # Check for available migrations
+  if [[ ! -d "$migrations_dir" ]] || [[ -z "$(ls -A "$migrations_dir" 2>/dev/null)" ]]; then
+    echo "No migrations available."
+    return 0
+  fi
+
+  echo "Checking for pending migrations..."
+  echo ""
+
+  # Apply migrations that haven't been applied yet
+  for migration_file in "$migrations_dir"/*.sh; do
+    if [[ ! -f "$migration_file" ]]; then
+      continue
+    fi
+
+    local migration_name=$(basename "$migration_file")
+
+    if grep -q "^$migration_name$" "$applied_file" 2>/dev/null; then
+      echo -e "${GREEN}✓${NC} $migration_name (already applied)"
+    else
+      echo -e "${YELLOW}→${NC} Applying $migration_name..."
+      if bash "$migration_file"; then
+        echo "$migration_name" >> "$applied_file"
+        echo -e "${GREEN}✓${NC} $migration_name (applied)"
+      else
+        echo -e "${RED}✗${NC} $migration_name (failed)"
+      fi
+    fi
+  done
+
+  echo ""
+  echo "Migrations complete."
+}
+
+# Main entry point
+main() {
+  local cmd="${1:-}"
+  shift || true
+
+  case "$cmd" in
+    status)
+      status
+      ;;
+    benchmark)
+      benchmark
+      ;;
+    migrate)
+      migrate
+      ;;
+    help|--help|-h)
+      if [[ -n "${1:-}" ]]; then
+        command_help "$1"
+      else
+        usage
+      fi
+      ;;
+    version|--version|-v)
+      echo "Tacharchy CLI v${VERSION}"
+      ;;
+    "")
+      usage
+      exit 1
+      ;;
+    *)
+      echo -e "${RED}Error: Unknown command '$cmd'${NC}\n"
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

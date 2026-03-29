@@ -40,6 +40,9 @@ grim
 xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 
+# DMS (DankMaterialShell) - desktop shell
+dms-shell-bin
+
 # Themes and appearance
 qt5-wayland
 kvantum-qt5
