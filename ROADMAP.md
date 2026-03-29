@@ -28,23 +28,42 @@ Our unique value — neither Omarchy nor DMS touches system performance tuning.
 - [x] `tacharchy-detect` — hardware detection and recommendation engine
 - [x] `tacharchy-foundation` — meta-package
 
-### 1b: Consume DMS + Port Theming
+### 1b: Fork Omarchy Installer ✅
+
+Fork Omarchy's installer system for Tacharchy, adapting branding and integrating performance tuning.
+
+- [x] Create installer/ directory structure with modular phases
+- [x] Fork helpers/ phase (all.sh, chroot.sh, presentation.sh, errors.sh, logging.sh)
+- [x] Fork preflight/ phase (guard, pacman, migrations, show-env)
+- [x] Fork packaging/ phase (base.sh with tacharchy-foundation integration)
+- [x] Fork config/ phase (branding, tacharchy-detect integration)
+- [x] Fork hardware detection scripts (Intel, NVIDIA, AMD, Apple, ASUS, Framework, Dell, Surface)
+- [x] Fork login/ phase (sddm, limine-snapper, plymouth)
+- [x] Fork post-install/ phase (finished, pacman, hibernation)
+- [x] Create top-level boot.sh (curl installer) and install.sh (entry point)
+- [x] Create Tacharchy branding (logo.txt with τ symbol, icon.txt)
+- [x] Create tacharchy-base.packages (essential packages)
+- [x] Replace all "omarchy" branding with "tacharchy"
+- [x] Replace all "OMARCHY_" env vars with "TACHARCHY_"
+- [x] Replace all paths (~/.local/share/omarchy → ~/.local/share/tacharchy)
+- [x] Add tacharchy-foundation installation step in packaging phase
+- [x] Add tacharchy-detect step in config phase
+
+### 1c: Consume DMS + Port Theming
 
 Consume DankMaterialShell as-is (no fork, no rebrand). Port matugen theming work into DMS upstream.
 
 - [ ] Package DMS as dependency (consume existing DMS packages)
 - [ ] Port matugen/Material You theming integration into DMS (upstream contribution)
-- [ ] Port bash installer (Omarchy-style) with hardware detection and auto-config
-- [ ] Integrate Omarchy's hardware detection into the installer
-- [ ] Integrate performance tuning package installation into the installer
+- [ ] Integrate DMS into Tacharchy installer
 - [ ] Add `tacharchy status` — show current tuning state
 - [ ] Add `tacharchy benchmark` — before/after performance comparison
-- [ ] Add `tacharchy migrate` — Omarchy-style timestamp-based migrations
+- [ ] Add `tacharchy migrate` — timestamp-based migrations
 - [ ] Test on clean Arch install (VM first, then real hardware)
 
-### 1c: Fork Omarchy Hardware Detection
+### 1d: Hardware Detection Refinement
 
-Implement per-vendor hardware detection natively in Go (inspired by Omarchy's fixes).
+Refine hardware detection with native Go implementation (building on forked Omarchy fixes).
 
 - [ ] Intel detection (CPU, GPU, WiFi 7, IPU camera, LPMD, thermald, PTL kernel)
 - [ ] NVIDIA detection (GPU arch: Turing+ vs legacy, correct driver, KMS, env vars)
@@ -56,7 +75,7 @@ Implement per-vendor hardware detection natively in Go (inspired by Omarchy's fi
 - [ ] Surface detection (keyboard fix)
 - [ ] Broadcom WiFi, Tuxedo backlight, Synaptic touchpad, YT6801 ethernet
 
-### 1d: Theme System
+### 1e: Theme System
 
 matugen: Material You palette generation from wallpaper or seed color. Ported into DMS.
 
@@ -67,7 +86,7 @@ matugen: Material You palette generation from wallpaper or seed color. Ported in
 - [ ] Light/dark mode support
 - [ ] Hot-reload system (`dms refresh` or matugen hooks)
 
-### 1e: App Ecosystem
+### 1f: App Ecosystem
 
 Port Omarchy's app configs and webapp system.
 
@@ -78,14 +97,14 @@ Port Omarchy's app configs and webapp system.
 - [ ] Screenshot/screen recording integration
 - [ ] Clipboard management (cliphist)
 
-### 1f: ISO & Installer
+### 1g: ISO & Installer
 
 - [ ] Arch-based ISO with Tacharchy pre-installed (Limine bootloader)
 - [ ] Snapshot/rollback system (Limine + snapper, btrfs)
 - [ ] Boot from USB → auto-detect hardware → install
 - [ ] AUR repository setup (GPG key, repo host, CI/CD)
 
-### 1g: Polish & Release
+### 1h: Polish & Release
 
 - [ ] Install script live (curl tacharchy.sh | sh)
 - [ ] Documentation site (tacharchy.com)

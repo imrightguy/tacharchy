@@ -1,0 +1,90 @@
+# Tacharchy core package list installed via install/packaging/base.sh
+# This file is also used by the ISO builder when determining needs
+
+# Essential system tools
+base-devel
+bash-completion
+bat
+btop
+docker
+docker-compose
+docker-buildx
+eza
+fastfetch
+fd
+fzf
+git
+github-cli
+jq
+ripgrep
+starship
+tree
+zoxide
+
+# Terminal
+alacritty
+ghostty
+kitty
+tmux
+zsh
+
+# Wayland essentials
+hyprland
+niri
+waybar
+swaylock
+wlogout
+wl-clipboard
+slurp
+grim
+xdg-desktop-portal-gtk
+xdg-desktop-portal-hyprland
+
+# Themes and appearance
+qt5-wayland
+kvantum-qt5
+gtk3
+gtk4
+
+# Audio and video
+pipewire
+wireplumber
+pamixer
+playerctl
+mpv
+
+# Network
+networkmanager
+iwd
+blueman
+bluez
+bluez-utils
+
+# Fonts
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-jetbrains-mono-nerd
+
+# Utilities
+gum
+mise
+lazydocker
+lazygit
+neovim
+vim
+
+# Printing
+cups
+cups-browsed
+cups-filters
+cups-pdf
+system-config-printer
+
+# Other essentials
+ufw
+pass
+pnpm
+nodejs
+python
+python-pip
