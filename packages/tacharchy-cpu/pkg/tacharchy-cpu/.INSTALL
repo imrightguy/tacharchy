@@ -1,0 +1,240 @@
+#!/bin/bash
+# Tacharchy CPU post-install script
+# Detects CPU type and configures appropriate settings
+
+set -e
+
+get_cpu_vendor() {
+    if [[ -f /proc/cpuinfo ]]; then
+        grep -m1 "vendor_id" /proc/cpuinfo | awk '{print $3}'
+    else
+        echo "unknown"
+    fi
+}
+
+is_intel_hybrid() {
+    # Check for Intel hybrid architecture (P-cores + E-cores)
+    if [[ ! -d /sys/devices/system/cpu ]]; then
+        return 1
+    fi
+    
+    local has_p=0
+    local has_e=0
+    
+    for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*; do
+        if [[ -f "$cpu_dir/topology/core_type" ]]; then
+            local core_type
+            core_type=$(cat "$cpu_dir/topology/core_type" 2>/dev/null || echo "")
+            case "$core_type" in
+                "performance") ((has_p++)) ;;
+                "efficiency") ((has_e++)) ;;
+            esac
+        fi
+    done
+    
+    [[ $has_p -gt 0 && $has_e -gt 0 ]]
+}
+
+get_p_core_list() {
+    # Get list of P-core CPU numbers
+    local p_cores=()
+    
+    for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*; do
+        if [[ -f "$cpu_dir/topology/core_type" ]]; then
+            local core_type
+            core_type=$(cat "$cpu_dir/topology/core_type" 2>/dev/null || echo "")
+            if [[ "$core_type" == "performance" ]]; then
+                local cpu_num
+                cpu_num=$(basename "$cpu_dir" | sed 's/cpu//')
+                p_cores+=("$cpu_num")
+            fi
+        fi
+    done
+    
+    echo "${p_cores[@]}"
+}
+
+get_e_core_list() {
+    # Get list of E-core CPU numbers
+    local e_cores=()
+    
+    for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*; do
+        if [[ -f "$cpu_dir/topology/core_type" ]]; then
+            local core_type
+            core_type=$(cat "$cpu_dir/topology/core_type" 2>/dev/null || echo "")
+            if [[ "$core_type" == "efficiency" ]]; then
+                local cpu_num
+                cpu_num=$(basename "$cpu_dir" | sed 's/cpu//')
+                e_cores+=("$cpu_num")
+            fi
+        fi
+    done
+    
+    echo "${e_cores[@]}"
+}
+
+has_hwp_support() {
+    # Check if Intel HWP is supported
+    if [[ -f /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+get_current_governor() {
+    cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "unknown"
+}
+
+is_amd_pstate_active() {
+    if [[ -f /sys/devices/system/cpu/amd_pstate/status ]]; then
+        local status
+        status=$(cat /sys/devices/system/cpu/amd_pstate/status 2>/dev/null)
+        [[ "$status" == "active" ]]
+    else
+        return 1
+    fi
+}
+
+set_epp_for_cores() {
+    local cores=($1)
+    local epp_value="$2"
+    
+    for core in "${cores[@]}"; do
+        local epp_file="/sys/devices/system/cpu/cpu$core/cpufreq/energy_performance_preference"
+        if [[ -w "$epp_file" ]]; then
+            echo "$epp_value" > "$epp_file" 2>/dev/null || true
+        fi
+    done
+}
+
+configure_intel_hybrid() {
+    echo "=== Intel Hybrid CPU Detected ==="
+    echo ""
+    
+    local p_cores e_cores
+    p_cores=$(get_p_core_list)
+    e_cores=$(get_e_core_list)
+    local p_core_array=($p_cores)
+    local e_core_array=($e_cores)
+    
+    echo "P-cores: ${p_cores}"
+    echo "E-cores: ${e_cores}"
+    echo "Total: ${#p_core_array[@]} P-core threads, ${#e_core_array[@]} E-core threads"
+    echo ""
+    
+    # Check HWP support
+    if has_hwp_support; then
+        echo "Intel HWP: supported"
+        
+        local governor
+        governor=$(get_current_governor)
+        echo "Current governor: $governor"
+        echo ""
+        
+        # Set EPP for P-cores to performance
+        echo "Setting EPP for P-cores to 'performance'..."
+        set_epp_for_cores "$p_cores" "performance"
+        
+        # Set EPP for E-cores to balance_performance
+        echo "Setting EPP for E-cores to 'balance_performance'..."
+        set_epp_for_cores "$e_cores" "balance_performance"
+        
+        echo ""
+        echo "Note: EPP changes are applied immediately but not persistent."
+        echo "To make persistent, use a systemd service or tmpfiles config."
+    else
+        echo "Intel HWP: not available (may need intel_pstate=active kernel parameter)"
+    fi
+    
+    echo ""
+    
+    # Update user.slice affinity config
+    local affinity_conf="/etc/systemd/system/user.slice.d/affinity.conf"
+    local max_p_core=${p_core_array[-1]}
+    
+    echo ":: User slice affinity configuration: $affinity_conf"
+    echo "   Current setting restricts user processes to P-cores 0-$max_p_core"
+    echo ""
+    echo "   If you have a different CPU topology, edit this file."
+    echo "   Run 'lscpu -e' to see your core configuration."
+}
+
+configure_amd() {
+    echo "=== AMD CPU Detected ==="
+    echo ""
+    
+    if is_amd_pstate_active; then
+        echo "AMD P-State: active"
+        echo ""
+        echo "AMD CPUs with preferred cores (Ryzen 7000 X3D) have the kernel"
+        echo "automatically schedule workloads on the fastest cores."
+        echo ""
+        echo "No manual tuning needed - the amd_pstate driver handles everything."
+        echo ""
+        echo "Optional: For maximum performance, set EPP to 'performance':"
+        echo "  echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference"
+        echo ""
+        echo "For daily use, 'balance_performance' is recommended for better power efficiency."
+    else
+        echo "AMD P-State: not active"
+        echo ""
+        echo "To enable AMD P-State, add 'amd_pstate=active' to your kernel command line."
+        echo "This enables preferred core scheduling and EPP control."
+    fi
+}
+
+post_install() {
+    echo ":: Tacharchy CPU package installed"
+    echo "   Configuration files:"
+    echo "   - /usr/lib/tmpfiles.d/tacharchy-cpu.conf (EPP tmpfiles)"
+    echo "   - /etc/systemd/system/user.slice.d/affinity.conf (user slice affinity)"
+    echo ""
+    
+    local vendor
+    vendor=$(get_cpu_vendor)
+    
+    case "$vendor" in
+        GenuineIntel)
+            if is_intel_hybrid; then
+                configure_intel_hybrid
+            else
+                echo "Intel CPU detected (non-hybrid)"
+                echo "No specific tuning needed for non-hybrid Intel CPUs."
+                echo ""
+                echo "You may want to set the governor to 'performance' for gaming:"
+                echo "  echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+            fi
+            ;;
+            
+        AuthenticAMD)
+            configure_amd
+            ;;
+            
+        *)
+            echo "Unknown CPU vendor: $vendor"
+            echo "No automatic configuration available."
+            ;;
+    esac
+    
+    echo ""
+    echo ":: Reload systemd to apply user.slice affinity:"
+    echo "   sudo systemctl daemon-reload"
+    echo "   systemctl --user daemon-reload"
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    echo ":: Tacharchy CPU package removed"
+    echo "   Config files preserved:"
+    echo "   - /etc/systemd/system/user.slice.d/affinity.conf"
+    echo ""
+    echo "   Remove manually if not needed."
+    echo ""
+    echo "   To restore default CPU affinity (all cores):"
+    echo "   rm /etc/systemd/system/user.slice.d/affinity.conf"
+    echo "   sudo systemctl daemon-reload"
+}

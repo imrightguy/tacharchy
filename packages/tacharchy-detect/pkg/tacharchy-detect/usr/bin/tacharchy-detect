@@ -1,0 +1,580 @@
+#!/bin/bash
+# Tacharchy Hardware Detection Script
+# Detects CPU, GPU, audio, storage, and RAM configuration
+# Recommends which tacharchy packages to configure
+#
+# Usage: tacharchy-detect [--json] [--verbose]
+#
+# Project: https://github.com/tacharchy/tacharchy
+
+set -e
+
+# Output format
+OUTPUT_FORMAT="text"
+VERBOSE=0
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --json) OUTPUT_FORMAT="json" ;;
+        --verbose|-v) VERBOSE=1 ;;
+        --help|-h)
+            echo "Usage: tacharchy-detect [--json] [--verbose]"
+            echo ""
+            echo "Options:"
+            echo "  --json      Output in JSON format"
+            echo "  --verbose   Show detailed information"
+            echo "  --help      Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# ============================================================================
+# DETECTION FUNCTIONS
+# ============================================================================
+
+detect_cpu() {
+    local cpu_info={}
+    local vendor model cores threads
+    
+    if [[ -f /proc/cpuinfo ]]; then
+        vendor=$(grep -m1 "vendor_id" /proc/cpuinfo | awk '{print $3}')
+        model=$(grep -m1 "model name" /proc/cpuinfo | sed 's/model name[[:space:]]*:[[:space:]]*//')
+        cores=$(nproc 2>/dev/null || echo "unknown")
+        threads=$(grep -c "processor" /proc/cpuinfo 2>/dev/null || echo "unknown")
+    else
+        vendor="unknown"
+        model="unknown"
+        cores="unknown"
+        threads="unknown"
+    fi
+    
+    # Detect Intel hybrid
+    local is_hybrid="false"
+    local p_cores=()
+    local e_cores=()
+    
+    for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*; do
+        if [[ -f "$cpu_dir/topology/core_type" ]]; then
+            local core_type
+            core_type=$(cat "$cpu_dir/topology/core_type" 2>/dev/null || echo "")
+            is_hybrid="true"
+            case "$core_type" in
+                "performance")
+                    p_cores+=("$(basename "$cpu_dir" | sed 's/cpu//')")
+                    ;;
+                "efficiency")
+                    e_cores+=("$(basename "$cpu_dir" | sed 's/cpu//')")
+                    ;;
+            esac
+        fi
+    done
+    
+    # Detect HWP support
+    local has_hwp="false"
+    if [[ -f /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference ]]; then
+        has_hwp="true"
+    fi
+    
+    # Detect AMD P-State
+    local has_amd_pstate="false"
+    if [[ -f /sys/devices/system/cpu/amd_pstate/status ]]; then
+        local status
+        status=$(cat /sys/devices/system/cpu/amd_pstate/status 2>/dev/null)
+        [[ "$status" == "active" ]] && has_amd_pstate="true"
+    fi
+    
+    cpu_info="vendor=$vendor"
+    cpu_info="$cpu_info model=$model"
+    cpu_info="$cpu_info cores=$cores"
+    cpu_info="$cpu_info threads=$threads"
+    cpu_info="$cpu_info is_hybrid=$is_hybrid"
+    cpu_info="$cpu_info has_hwp=$has_hwp"
+    cpu_info="$cpu_info has_amd_pstate=$has_amd_pstate"
+    cpu_info="$cpu_info p_cores=${p_cores[*]}"
+    cpu_info="$cpu_info e_cores=${e_cores[*]}"
+    
+    echo "$cpu_info"
+}
+
+detect_gpu() {
+    local gpu_info=""
+    local vendors=()
+    
+    # Check for NVIDIA
+    if lspci -nn 2>/dev/null | grep -qi 'NVIDIA.*VGA\|NVIDIA.*3D'; then
+        vendors+=("nvidia")
+        local nvidia_model
+        nvidia_model=$(lspci -nn 2>/dev/null | grep -i 'NVIDIA.*VGA\|NVIDIA.*3D' | head -1 | sed 's/.*\[//;s/\]//' || echo "unknown")
+        gpu_info="$gpu_info nvidia_model=$nvidia_model"
+    fi
+    
+    # Check for AMD
+    if lspci -nn 2>/dev/null | grep -qi 'AMD.*VGA\|AMD.*Display\|Advanced Micro Devices.*VGA'; then
+        vendors+=("amd")
+        local amd_model
+        amd_model=$(lspci -nn 2>/dev/null | grep -i 'AMD.*VGA\|AMD.*Display' | head -1 | sed 's/.*\[//;s/\]//' || echo "unknown")
+        gpu_info="$gpu_info amd_model=$amd_model"
+    fi
+    
+    # Check for Intel
+    if lspci -nn 2>/dev/null | grep -qi 'Intel.*VGA\|Intel.*Display'; then
+        vendors+=("intel")
+        local intel_model
+        intel_model=$(lspci -nn 2>/dev/null | grep -i 'Intel.*VGA\|Intel.*Display' | head -1 | sed 's/.*\[//;s/\]//' || echo "unknown")
+        gpu_info="$gpu_info intel_model=$intel_model"
+    fi
+    
+    gpu_info="vendors=${vendors[*]} $gpu_info"
+    
+    echo "$gpu_info"
+}
+
+detect_audio() {
+    local audio_info=""
+    
+    # Check for PipeWire
+    if command -v pipewire &>/dev/null; then
+        audio_info="$audio_info pipewire=installed"
+    else
+        audio_info="$audio_info pipewire=not_installed"
+    fi
+    
+    # Check for PulseAudio
+    if command -v pulseaudio &>/dev/null; then
+        audio_info="$audio_info pulseaudio=installed"
+    else
+        audio_info="$audio_info pulseaudio=not_installed"
+    fi
+    
+    # Check audio group membership
+    local current_user="${USER:-$(whoami 2>/dev/null || echo 'unknown')}"
+    if groups "$current_user" 2>/dev/null | grep -q '\baudio\b'; then
+        audio_info="$audio_info in_audio_group=true"
+    else
+        audio_info="$audio_info in_audio_group=false"
+    fi
+    
+    # Check for HD audio
+    if lspci -nn 2>/dev/null | grep -qi 'Audio'; then
+        audio_info="$audio_info hd_audio=true"
+    else
+        audio_info="$audio_info hd_audio=false"
+    fi
+    
+    echo "$audio_info"
+}
+
+detect_storage() {
+    local storage_info=""
+    local nvme_count=0
+    local ssd_count=0
+    local hdd_count=0
+    local devices=()
+    
+    for dev in /sys/block/*; do
+        local name
+        name=$(basename "$dev")
+        
+        # Skip non-disk devices
+        case "$name" in
+            loop*|ram*|sr*|zram*) continue ;;
+        esac
+        
+        local rotational
+        rotational=$(cat "$dev/queue/rotational" 2>/dev/null || echo "0")
+        
+        if [[ "$name" == nvme* ]]; then
+            ((nvme_count++))
+            devices+=("nvme:$name")
+        elif [[ "$rotational" == "0" ]]; then
+            ((ssd_count++))
+            devices+=("ssd:$name")
+        else
+            ((hdd_count++))
+            devices+=("hdd:$name")
+        fi
+    done
+    
+    storage_info="nvme_count=$nvme_count"
+    storage_info="$storage_info ssd_count=$ssd_count"
+    storage_info="$storage_info hdd_count=$hdd_count"
+    storage_info="$storage_info devices=${devices[*]}"
+    
+    # Detect swap type
+    local swap_type="none"
+    local swap_devices
+    swap_devices=$(swapon --show=NAME --noheadings 2>/dev/null || true)
+    
+    if [[ -n "$swap_devices" ]]; then
+        for device in $swap_devices; do
+            if [[ "$device" == /dev/nvme* ]]; then
+                swap_type="nvme"
+                break
+            elif [[ -f "$device" ]]; then
+                # Swap file - check underlying filesystem
+                local mount_point
+                mount_point=$(df --output=target "$device" 2>/dev/null | tail -1)
+                local block_dev
+                block_dev=$(findmnt -n -o SOURCE "$mount_point" 2>/dev/null || echo "")
+                if [[ "$block_dev" == /dev/nvme* ]]; then
+                    swap_type="nvme"
+                    break
+                elif [[ -f "/sys/block/${block_dev#/dev/}/queue/rotational" ]]; then
+                    local rot
+                    rot=$(cat "/sys/block/${block_dev#/dev/}/queue/rotational" 2>/dev/null || echo "1")
+                    if [[ "$rot" == "0" ]]; then
+                        swap_type="ssd"
+                        break
+                    else
+                        swap_type="hdd"
+                        break
+                    fi
+                fi
+            fi
+        done
+    fi
+    
+    storage_info="$storage_info swap_type=$swap_type"
+    
+    echo "$storage_info"
+}
+
+detect_ram() {
+    local ram_info=""
+    local total_kb total_gb
+    
+    if [[ -f /proc/meminfo ]]; then
+        total_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+        total_gb=$((total_kb / 1024 / 1024))
+        ram_info="total_kb=$total_kb"
+        ram_info="$ram_info total_gb=$total_gb"
+    else
+        ram_info="total_kb=unknown"
+        ram_info="$ram_info total_gb=unknown"
+    fi
+    
+    echo "$ram_info"
+}
+
+# ============================================================================
+# RECOMMENDATIONS
+# ============================================================================
+
+generate_recommendations() {
+    local cpu_info="$1"
+    local gpu_info="$2"
+    local audio_info="$3"
+    local storage_info="$4"
+    local ram_info="$5"
+    
+    local recommendations=()
+    local notes=()
+    
+    # Parse info
+    local cpu_vendor cpu_is_hybrid cpu_has_hwp
+    cpu_vendor=$(echo "$cpu_info" | grep -o 'vendor=[^ ]*' | cut -d= -f2)
+    cpu_is_hybrid=$(echo "$cpu_info" | grep -o 'is_hybrid=[^ ]*' | cut -d= -f2)
+    cpu_has_hwp=$(echo "$cpu_info" | grep -o 'has_hwp=[^ ]*' | cut -d= -f2)
+    
+    local gpu_vendors
+    gpu_vendors=$(echo "$gpu_info" | grep -o 'vendors=[^ ]*' | cut -d= -f2)
+    
+    local audio_pipewire audio_in_group
+    audio_pipewire=$(echo "$audio_info" | grep -o 'pipewire=[^ ]*' | cut -d= -f2)
+    audio_in_group=$(echo "$audio_info" | grep -o 'in_audio_group=[^ ]*' | cut -d= -f2)
+    
+    local nvme_count ssd_count hdd_count swap_type
+    nvme_count=$(echo "$storage_info" | grep -o 'nvme_count=[^ ]*' | cut -d= -f2)
+    ssd_count=$(echo "$storage_info" | grep -o 'ssd_count=[^ ]*' | cut -d= -f2)
+    hdd_count=$(echo "$storage_info" | grep -o 'hdd_count=[^ ]*' | cut -d= -f2)
+    swap_type=$(echo "$storage_info" | grep -o 'swap_type=[^ ]*' | cut -d= -f2)
+    
+    local ram_gb
+    ram_gb=$(echo "$ram_info" | grep -o 'total_gb=[^ ]*' | cut -d= -f2)
+    
+    # Sysctl recommendations
+    recommendations+=("tacharchy-sysctl")
+    if [[ "$swap_type" == "nvme" ]]; then
+        notes+=("sysctl: NVMe swap detected, will set vm.swappiness=100")
+    elif [[ "$swap_type" == "hdd" ]]; then
+        notes+=("sysctl: HDD swap detected, will set vm.swappiness=10")
+    fi
+    
+    if [[ "$ram_gb" != "unknown" && "$ram_gb" -lt 16 ]]; then
+        notes+=("sysctl: Consider lowering vm.vfs_cache_pressure (<16GB RAM)")
+    fi
+    
+    # Audio recommendations
+    if [[ "$audio_pipewire" == "installed" ]]; then
+        recommendations+=("tacharchy-audio")
+        if [[ "$audio_in_group" == "false" ]]; then
+            notes+=("audio: Add user to audio group for realtime scheduling")
+        fi
+    fi
+    
+    # GPU recommendations
+    if [[ "$gpu_vendors" == *nvidia* ]]; then
+        recommendations+=("tacharchy-gpu")
+        notes+=("gpu: NVIDIA detected, ensure nvidia-drm.modeset=1 for Wayland")
+    fi
+    if [[ "$gpu_vendors" == *amd* ]]; then
+        recommendations+=("tacharchy-gpu")
+        notes+=("gpu: AMD detected, install libva-mesa-driver for VA-API")
+    fi
+    if [[ "$gpu_vendors" == *intel* ]]; then
+        recommendations+=("tacharchy-gpu")
+        notes+=("gpu: Intel detected, install intel-media-driver for VA-API")
+    fi
+    
+    # Network recommendations
+    recommendations+=("tacharchy-network")
+    notes+=("network: BBR congestion control recommended for all systems")
+    
+    # I/O recommendations
+    recommendations+=("tacharchy-io")
+    if [[ "$nvme_count" -gt 0 ]]; then
+        notes+=("io: NVMe detected, scheduler=none")
+    fi
+    if [[ "$ssd_count" -gt 0 ]]; then
+        notes+=("io: SSD detected, scheduler=mq-deadline")
+    fi
+    if [[ "$hdd_count" -gt 0 ]]; then
+        notes+=("io: HDD detected, scheduler=bfq")
+    fi
+    
+    # CPU recommendations
+    if [[ "$cpu_is_hybrid" == "true" ]]; then
+        recommendations+=("tacharchy-cpu")
+        notes+=("cpu: Intel hybrid detected, will configure P-core affinity")
+    elif [[ "$cpu_vendor" == "AuthenticAMD" ]]; then
+        recommendations+=("tacharchy-cpu")
+        notes+=("cpu: AMD detected, amd_pstate handles preferred cores automatically")
+    fi
+    
+    echo "recommendations=${recommendations[*]}"
+    echo "notes=${notes[@]}"
+}
+
+# ============================================================================
+# OUTPUT FUNCTIONS
+# ============================================================================
+
+output_text() {
+    local cpu_info="$1"
+    local gpu_info="$2"
+    local audio_info="$3"
+    local storage_info="$4"
+    local ram_info="$5"
+    local recommendations="$6"
+    
+    echo "╔══════════════════════════════════════════════════════════════════════════╗"
+    echo "║                        TACHARCHY HARDWARE DETECT                         ║"
+    echo "╚══════════════════════════════════════════════════════════════════════════╝"
+    echo ""
+    
+    # CPU
+    echo "┌─ CPU ────────────────────────────────────────────────────────────────────┐"
+    local vendor model cores is_hybrid p_cores e_cores
+    vendor=$(echo "$cpu_info" | grep -o 'vendor=[^ ]*' | cut -d= -f2)
+    model=$(echo "$cpu_info" | grep -o 'model=[^p]*' | sed 's/model=//' | cut -d' ' -f1-10)
+    cores=$(echo "$cpu_info" | grep -o 'cores=[^ ]*' | cut -d= -f2)
+    is_hybrid=$(echo "$cpu_info" | grep -o 'is_hybrid=[^ ]*' | cut -d= -f2)
+    p_cores=$(echo "$cpu_info" | grep -o 'p_cores=[^ ]*' | cut -d= -f2)
+    e_cores=$(echo "$cpu_info" | grep -o 'e_cores=[^ ]*' | cut -d= -f2)
+    
+    echo "│ Vendor:    $vendor"
+    echo "│ Model:     $model"
+    echo "│ Cores:     $cores"
+    if [[ "$is_hybrid" == "true" ]]; then
+        echo "│ Type:      Hybrid (P-cores + E-cores)"
+        echo "│ P-cores:   ${p_cores:-none detected}"
+        echo "│ E-cores:   ${e_cores:-none detected}"
+    fi
+    echo "└───────────────────────────────────────────────────────────────────────────┘"
+    echo ""
+    
+    # GPU
+    echo "┌─ GPU ────────────────────────────────────────────────────────────────────┐"
+    local gpu_vendors
+    gpu_vendors=$(echo "$gpu_info" | grep -o 'vendors=[^ ]*' | cut -d= -f2)
+    if [[ -n "$gpu_vendors" ]]; then
+        for v in $gpu_vendors; do
+            local model_key="${v}_model"
+            local model
+            model=$(echo "$gpu_info" | grep -o "${model_key}=[^ ]*" | cut -d= -f2)
+            echo "│ ${v^^}: $model"
+        done
+    else
+        echo "│ No GPU detected"
+    fi
+    echo "└───────────────────────────────────────────────────────────────────────────┘"
+    echo ""
+    
+    # Audio
+    echo "┌─ AUDIO ──────────────────────────────────────────────────────────────────┐"
+    local pipewire in_group
+    pipewire=$(echo "$audio_info" | grep -o 'pipewire=[^ ]*' | cut -d= -f2)
+    in_group=$(echo "$audio_info" | grep -o 'in_audio_group=[^ ]*' | cut -d= -f2)
+    echo "│ PipeWire:     $pipewire"
+    echo "│ Audio group:  $in_group"
+    echo "└───────────────────────────────────────────────────────────────────────────┘"
+    echo ""
+    
+    # Storage
+    echo "┌─ STORAGE ────────────────────────────────────────────────────────────────┐"
+    local nvme_count ssd_count hdd_count swap_type
+    nvme_count=$(echo "$storage_info" | grep -o 'nvme_count=[^ ]*' | cut -d= -f2)
+    ssd_count=$(echo "$storage_info" | grep -o 'ssd_count=[^ ]*' | cut -d= -f2)
+    hdd_count=$(echo "$storage_info" | grep -o 'hdd_count=[^ ]*' | cut -d= -f2)
+    swap_type=$(echo "$storage_info" | grep -o 'swap_type=[^ ]*' | cut -d= -f2)
+    echo "│ NVMe: $nvme_count  SSD: $ssd_count  HDD: $hdd_count"
+    echo "│ Swap type: $swap_type"
+    echo "└───────────────────────────────────────────────────────────────────────────┘"
+    echo ""
+    
+    # RAM
+    echo "┌─ RAM ────────────────────────────────────────────────────────────────────┐"
+    local total_gb
+    total_gb=$(echo "$ram_info" | grep -o 'total_gb=[^ ]*' | cut -d= -f2)
+    echo "│ Total: ${total_gb}GB"
+    echo "└───────────────────────────────────────────────────────────────────────────┘"
+    echo ""
+    
+    # Recommendations
+    echo "╔══════════════════════════════════════════════════════════════════════════╗"
+    echo "║                          RECOMMENDED PACKAGES                            ║"
+    echo "╚══════════════════════════════════════════════════════════════════════════╝"
+    echo ""
+    
+    local recs notes
+    recs=$(echo "$recommendations" | grep 'recommendations=' | cut -d= -f2)
+    notes=$(echo "$recommendations" | grep 'notes=' | cut -d= -f2-)
+    
+    echo "Install these packages:"
+    for pkg in $recs; do
+        echo "  • $pkg"
+    done
+    echo ""
+    
+    if [[ -n "$notes" ]]; then
+        echo "Notes:"
+        while IFS= read -r note; do
+            [[ -n "$note" ]] && echo "  - $note"
+        done <<< "$notes"
+    fi
+    echo ""
+    
+    echo "To install all recommended packages:"
+    echo "  sudo pacman -S ${recs// / }"
+    echo ""
+    echo "Or install the meta-package:"
+    echo "  sudo pacman -S tacharchy-foundation"
+}
+
+output_json() {
+    local cpu_info="$1"
+    local gpu_info="$2"
+    local audio_info="$3"
+    local storage_info="$4"
+    local ram_info="$5"
+    local recommendations="$6"
+    
+    # Simple JSON output (no jq dependency)
+    echo "{"
+    
+    # CPU
+    echo '  "cpu": {'
+    local vendor model cores threads is_hybrid has_hwp p_cores e_cores
+    vendor=$(echo "$cpu_info" | grep -o 'vendor=[^ ]*' | cut -d= -f2)
+    model=$(echo "$cpu_info" | grep -o 'model=[^p]*' | sed 's/model=//' | cut -d' ' -f1-10)
+    cores=$(echo "$cpu_info" | grep -o 'cores=[^ ]*' | cut -d= -f2)
+    threads=$(echo "$cpu_info" | grep -o 'threads=[^ ]*' | cut -d= -f2)
+    is_hybrid=$(echo "$cpu_info" | grep -o 'is_hybrid=[^ ]*' | cut -d= -f2)
+    has_hwp=$(echo "$cpu_info" | grep -o 'has_hwp=[^ ]*' | cut -d= -f2)
+    p_cores=$(echo "$cpu_info" | grep -o 'p_cores=[^ ]*' | cut -d= -f2)
+    e_cores=$(echo "$cpu_info" | grep -o 'e_cores=[^ ]*' | cut -d= -f2)
+    
+    echo "    \"vendor\": \"$vendor\","
+    echo "    \"model\": \"$model\","
+    echo "    \"cores\": $cores,"
+    echo "    \"threads\": $threads,"
+    echo "    \"is_hybrid\": $is_hybrid,"
+    echo "    \"has_hwp\": $has_hwp,"
+    echo "    \"p_cores\": [${p_cores// /, }],"
+    echo "    \"e_cores\": [${e_cores// /, }]"
+    echo "  },"
+    
+    # GPU
+    echo '  "gpu": {'
+    local gpu_vendors
+    gpu_vendors=$(echo "$gpu_info" | grep -o 'vendors=[^ ]*' | cut -d= -f2)
+    echo "    \"vendors\": [\"${gpu_vendors// /\", \"}\"],"
+    for v in $gpu_vendors; do
+        local model_key="${v}_model"
+        local model
+        model=$(echo "$gpu_info" | grep -o "${model_key}=[^ ]*" | cut -d= -f2)
+        echo "    \"${v}_model\": \"$model\","
+    done
+    echo '    "placeholder": null'
+    echo "  },"
+    
+    # Storage
+    echo '  "storage": {'
+    local nvme_count ssd_count hdd_count swap_type
+    nvme_count=$(echo "$storage_info" | grep -o 'nvme_count=[^ ]*' | cut -d= -f2)
+    ssd_count=$(echo "$storage_info" | grep -o 'ssd_count=[^ ]*' | cut -d= -f2)
+    hdd_count=$(echo "$storage_info" | grep -o 'hdd_count=[^ ]*' | cut -d= -f2)
+    swap_type=$(echo "$storage_info" | grep -o 'swap_type=[^ ]*' | cut -d= -f2)
+    echo "    \"nvme_count\": $nvme_count,"
+    echo "    \"ssd_count\": $ssd_count,"
+    echo "    \"hdd_count\": $hdd_count,"
+    echo "    \"swap_type\": \"$swap_type\""
+    echo "  },"
+    
+    # RAM
+    echo '  "ram": {'
+    local total_gb
+    total_gb=$(echo "$ram_info" | grep -o 'total_gb=[^ ]*' | cut -d= -f2)
+    echo "    \"total_gb\": $total_gb"
+    echo "  },"
+    
+    # Recommendations
+    echo '  "recommendations": {'
+    local recs
+    recs=$(echo "$recommendations" | grep 'recommendations=' | cut -d= -f2)
+    echo "    \"packages\": [\"${recs// /\", \"}\"]"
+    echo "  }"
+    
+    echo "}"
+}
+
+# ============================================================================
+# MAIN
+# ============================================================================
+
+main() {
+    # Run detections
+    local cpu_info gpu_info audio_info storage_info ram_info recommendations
+    
+    cpu_info=$(detect_cpu)
+    gpu_info=$(detect_gpu)
+    audio_info=$(detect_audio)
+    storage_info=$(detect_storage)
+    ram_info=$(detect_ram)
+    recommendations=$(generate_recommendations "$cpu_info" "$gpu_info" "$audio_info" "$storage_info" "$ram_info")
+    
+    # Output
+    case "$OUTPUT_FORMAT" in
+        json) output_json "$cpu_info" "$gpu_info" "$audio_info" "$storage_info" "$ram_info" "$recommendations" ;;
+        *)    output_text "$cpu_info" "$gpu_info" "$audio_info" "$storage_info" "$ram_info" "$recommendations" ;;
+    esac
+}
+
+main "$@"

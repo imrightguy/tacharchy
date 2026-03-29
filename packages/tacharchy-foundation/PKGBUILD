@@ -4,6 +4,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="Meta-package for Tacharchy performance tuning layer"
 arch=(any)
+
 url="https://github.com/tacharchy/tacharchy"
 license=('MIT')
 depends=(

@@ -1,0 +1,20 @@
+# Tacharchy Network Link Configuration Template
+# Copy to /etc/systemd/network/10-tacharchy-<interface>.link
+# and replace <INTERFACE> with your interface name
+#
+# This increases NIC ring buffer sizes to reduce packet drop under load.
+# Not all NICs support this - check with 'ethtool -g <interface>'
+#
+# Example: /etc/systemd/network/10-tacharchy-enp0s31f6.link
+
+[Match]
+OriginalName=<INTERFACE>
+
+[Link]
+# Set these to the maximum supported by your NIC
+# Check with: ethtool -g <interface>
+RxBufferSize=4096
+TxBufferSize=4096
+
+# Optional: Enable Wake-on-LAN
+# WakeOnLan=magic

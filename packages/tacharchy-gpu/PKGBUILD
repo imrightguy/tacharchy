@@ -4,6 +4,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="GPU driver optimizations for Tacharchy"
 arch=(any)
+
 url="https://github.com/tacharchy/tacharchy"
 license=('MIT')
 depends=()
@@ -24,6 +25,8 @@ source=(
     "intel-gpu.conf"
     "tacharchy-gpu.install"
 )
+
+md5sums=('433e2ff9d15ee94851308532aba58f4a' '0693ffcfc47c8b2e51f6b7d40300c031' '66bb0d207d14a91e491a8fd7d8ec957c' '4c21a105d7b75e89b1ed5ad9bf3b75ca' 'c6ba8432bcc7b090cb5db45242ae60cc')
 
 package() {
     install -Dm644 nvidia-niri-vram.json \

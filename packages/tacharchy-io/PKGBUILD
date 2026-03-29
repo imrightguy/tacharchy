@@ -4,6 +4,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="I/O scheduler udev rules for Tacharchy"
 arch=(any)
+
 url="https://github.com/tacharchy/tacharchy"
 license=('MIT')
 depends=()
@@ -14,6 +15,8 @@ source=(
     "io-scheduler.rules"
     "tacharchy-io.install"
 )
+
+md5sums=('9b3eba2590cd9125fce2eda1d10ab643' 'eaf4540dd9c140a45956cbedf705759d')
 
 package() {
     install -Dm644 io-scheduler.rules "$pkgdir/etc/udev/rules.d/60-tacharchy-io-scheduler.rules"

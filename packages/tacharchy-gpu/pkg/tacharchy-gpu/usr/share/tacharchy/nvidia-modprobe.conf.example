@@ -1,0 +1,17 @@
+# Tacharchy NVIDIA Modprobe Configuration
+# Enable DRM modesetting and framebuffer for Wayland support
+#
+# These options are typically set via kernel command line on modern systems,
+# but can also be set via modprobe for consistency.
+#
+# Apply by copying to /etc/modprobe.d/tacharchy-nvidia.conf
+
+# Enable DRM kernel modesetting (required for Wayland)
+options nvidia_drm modeset=1
+
+# Enable framebuffer device (hardware cursor, early KMS)
+options nvidia_drm fbdev=1
+
+# Enable NVIDIA NVreg_PreserveVideoMemoryAllocations for hibernate support
+# Uncomment if you use hibernate:
+# options nvidia NVreg_PreserveVideoMemoryAllocations=1

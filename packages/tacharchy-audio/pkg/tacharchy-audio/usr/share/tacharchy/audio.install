@@ -1,0 +1,133 @@
+#!/bin/bash
+# Tacharchy audio post-install script
+# Detects Intel hybrid CPUs and configures audio affinity
+
+set -e
+
+is_intel_hybrid() {
+    # Check for Intel hybrid architecture (P-cores + E-cores)
+    if [[ ! -d /sys/devices/system/cpu ]]; then
+        return 1
+    fi
+    
+    local has_p=0
+    local has_e=0
+    
+    for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*; do
+        if [[ -f "$cpu_dir/topology/core_type" ]]; then
+            local core_type
+            core_type=$(cat "$cpu_dir/topology/core_type" 2>/dev/null || echo "")
+            case "$core_type" in
+                "performance") ((has_p++)) ;;
+                "efficiency") ((has_e++)) ;;
+            esac
+        fi
+    done
+    
+    [[ $has_p -gt 0 && $has_e -gt 0 ]]
+}
+
+get_p_core_list() {
+    # Get list of P-core CPU numbers
+    local p_cores=()
+    
+    for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*; do
+        if [[ -f "$cpu_dir/topology/core_type" ]]; then
+            local core_type
+            core_type=$(cat "$cpu_dir/topology/core_type" 2>/dev/null || echo "")
+            if [[ "$core_type" == "performance" ]]; then
+                local cpu_num
+                cpu_num=$(basename "$cpu_dir" | sed 's/cpu//')
+                p_cores+=("$cpu_num")
+            fi
+        fi
+    done
+    
+    echo "${p_cores[@]}"
+}
+
+configure_audio_affinity() {
+    if is_intel_hybrid; then
+        echo "info: Intel hybrid CPU detected"
+        
+        local p_cores
+        p_cores=$(get_p_core_list)
+        local p_core_array=($p_cores)
+        local num_p_cores=${#p_core_array[@]}
+        
+        if [[ $num_p_cores -lt 4 ]]; then
+            echo "info: Fewer than 4 P-cores, skipping audio affinity configuration"
+            return 0
+        fi
+        
+        # Pick 2 P-cores from the middle range
+        # Skip core 0 (interrupts) and last cores (interactive work)
+        local mid_start=$((num_p_cores / 3))
+        local affinity_cores="${p_core_array[$mid_start]}-${p_core_array[$((mid_start + 1))]}"
+        
+        echo "info: P-cores detected: ${p_cores[*]}"
+        echo "info: Recommended PipeWire affinity: $affinity_cores"
+        echo ""
+        echo ":: To enable PipeWire CPU affinity:"
+        echo "   1. Copy the example config:"
+        echo "      mkdir -p ~/.config/systemd/user/pipewire.service.d"
+        echo "      cp /usr/share/tacharchy/pipewire-affinity.conf.example \\"
+        echo "         ~/.config/systemd/user/pipewire.service.d/override.conf"
+        echo ""
+        echo "   2. Edit the CPUAffinity line to use: $affinity_cores"
+        echo ""
+        echo "   3. Reload systemd user session:"
+        echo "      systemctl --user daemon-reload"
+        echo "      systemctl --user restart pipewire pipewire-pulse wireplumber"
+    else
+        echo "info: Not an Intel hybrid CPU - CPU affinity not required"
+    fi
+}
+
+add_user_to_audio_group() {
+    local current_user
+    current_user="${SUDO_USER:-$USER}"
+    
+    if groups "$current_user" 2>/dev/null | grep -q '\baudio\b'; then
+        echo "info: User '$current_user' is already in the audio group"
+    else
+        echo ":: Adding user '$current_user' to audio group for realtime scheduling..."
+        usermod -aG audio "$current_user" 2>/dev/null || {
+            echo "warning: Could not add user to audio group"
+            echo "   Run manually: sudo usermod -aG audio $current_user"
+        }
+        echo "   Note: You may need to log out and back in for this to take effect."
+    fi
+}
+
+post_install() {
+    echo ":: Tacharchy audio package installed"
+    echo "   Configuration files:"
+    echo "   - /etc/security/limits.d/20-tacharchy-audio.conf (realtime limits)"
+    echo "   - /etc/modprobe.d/tacharchy-audio.conf (HD audio power save)"
+    echo ""
+    
+    # Add user to audio group
+    add_user_to_audio_group
+    
+    echo ""
+    
+    # Configure Intel hybrid audio affinity
+    configure_audio_affinity
+    
+    echo ""
+    echo ":: Realtime scheduling requires logging out and back in"
+    echo "   for group membership changes to take effect."
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    echo ":: Tacharchy audio package removed"
+    echo "   Config files were preserved. Remove manually if not needed:"
+    echo "   - /etc/security/limits.d/20-tacharchy-audio.conf"
+    echo "   - /etc/modprobe.d/tacharchy-audio.conf"
+    echo "   - /usr/lib/tmpfiles.d/tacharchy-audio.conf"
+}

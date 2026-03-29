@@ -4,6 +4,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="PipeWire realtime scheduling and audio optimizations for Tacharchy"
 arch=(any)
+
 url="https://github.com/tacharchy/tacharchy"
 license=('MIT')
 depends=(systemd bash)
@@ -19,6 +20,8 @@ source=(
     "pipewire-affinity.conf"
     "tacharchy-audio.install"
 )
+
+md5sums=('027cacbbfae9b4565d7e0c87c0abd1b7' 'b9e68770c549bd55044d6884ac9ee063' 'cf39bfa3f1b3d7c8335b0f43eec82c42' '4856dba789a2b87f42a3e64fdea0a50f' '60711f24a3bfa0d5fe1c74e71a58de48')
 
 package() {
     install -Dm644 limits.conf "$pkgdir/etc/security/limits.d/20-tacharchy-audio.conf"

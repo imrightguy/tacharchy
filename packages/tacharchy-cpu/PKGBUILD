@@ -4,6 +4,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="CPU scheduler tuning for Tacharchy"
 arch=(any)
+
 url="https://github.com/tacharchy/tacharchy"
 license=('MIT')
 depends=()
@@ -15,6 +16,8 @@ source=(
     "user-slice-affinity.conf"
     "tacharchy-cpu.install"
 )
+
+md5sums=('79b81c2a0d08058850547ff051028390' '23269bfb0c0c4c45945dce9c2d3ad85e' 'd8b83107dd5889121cabaa189a2048b1')
 
 package() {
     install -Dm644 cpu-tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/tacharchy-cpu.conf"

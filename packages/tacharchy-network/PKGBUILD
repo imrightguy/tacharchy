@@ -4,6 +4,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="Network stack tuning for Tacharchy"
 arch=(any)
+
 url="https://github.com/tacharchy/tacharchy"
 license=('MIT')
 depends=()
@@ -18,6 +19,8 @@ source=(
     "network-link.template"
     "tacharchy-network.install"
 )
+
+md5sums=('11b9341fc94eb977ffeb6ef712f70ec0' '755a7fd3f835be106fffd19fb6d245bf' '7be2b9f13af038fd98dc86f29755d451' 'ac7e9224c9725310d037d5f2951f0670')
 
 package() {
     install -Dm644 network-sysctl.conf "$pkgdir/etc/sysctl.d/99-tacharchy-network.conf"

@@ -1,0 +1,18 @@
+# PipeWire CPU Affinity Configuration Example
+# Copy to ~/.config/systemd/user/pipewire.service.d/override.conf
+#
+# On Intel hybrid CPUs, pinning PipeWire to specific P-cores ensures
+# consistent low-latency audio processing regardless of system load.
+#
+# Adjust CPUAffinity based on your CPU topology:
+# - i5-13600KF (6P+8E): cores 6-7 are P-core threads 12-15
+# - i7-13700K (8P+8E): cores 4-5 or 6-7
+# - i9-13900K (8P+16E): cores 6-7 or 8-9
+#
+# Use 'lscpu -e' or check /sys/devices/system/cpu/cpu*/topology/core_type
+# to identify P-cores on your system.
+
+[Service]
+CPUAffinity=6-7
+OOMScoreAdjust=-1000
+MemoryMin=64M

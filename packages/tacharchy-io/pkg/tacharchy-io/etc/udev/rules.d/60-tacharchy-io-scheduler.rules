@@ -1,0 +1,57 @@
+# Tacharchy I/O Scheduler Udev Rules
+# Automatically sets optimal I/O scheduler based on storage type
+#
+# Storage type -> Scheduler mapping:
+#   NVMe SSD -> none (no scheduler, device handles queueing internally)
+#   SATA SSD -> mq-deadline (deadline-based, low overhead)
+#   HDD      -> bfq (Budget Fair Queueing, minimizes seek latency)
+#
+# Project: https://github.com/tacharchy/tacharchy
+
+# =============================================================================
+# NVMe: No scheduler needed
+# =============================================================================
+# NVMe drives have tens of thousands of queues, microsecond latency,
+# and internal command reordering. The kernel scheduler adds overhead
+# without benefit. Let the NVMe controller handle everything.
+ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/scheduler}="none"
+
+# =============================================================================
+# SATA/SAS SSDs: mq-deadline
+# =============================================================================
+# SSDs benefit from deadline-based scheduling to prevent starvation
+# while keeping overhead low. mq-deadline is well-suited for SSDs.
+# Rotational=0 means non-rotational (SSD)
+ACTION=="add|change", KERNEL=="sd[a-z]|sr[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+
+# Also handle multiple SD devices (sdaa, sdab, etc.)
+ACTION=="add|change", KERNEL=="sd[a-z][a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+
+# =============================================================================
+# HDDs: bfq (Budget Fair Queueing)
+# =============================================================================
+# HDDs benefit from bfq's process fairness and seek optimization.
+# bfq prevents one process from starving others and anticipates
+# sequential access patterns.
+# Rotational=1 means rotational (HDD)
+ACTION=="add|change", KERNEL=="sd[a-z]|sr[0-9]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
+
+# Also handle multiple SD devices (sdaa, sdab, etc.)
+ACTION=="add|change", KERNEL=="sd[a-z][a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
+
+# =============================================================================
+# Virtual/MMC devices: mq-deadline
+# =============================================================================
+# Virtual block devices and MMC/SD cards typically benefit from
+# mq-deadline for fair scheduling without the overhead of bfq.
+ACTION=="add|change", KERNEL=="mmcblk[0-9]*", ATTR{queue/scheduler}="mq-deadline"
+ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/scheduler}="mq-deadline"
+ACTION=="add|change", KERNEL=="xvd[a-z]", ATTR{queue/scheduler}="mq-deadline"
+
+# =============================================================================
+# NVMe power management (optional)
+# =============================================================================
+# Uncomment to enable NVMe power management for laptops
+# May reduce performance slightly but saves power
+# ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{device/power/wakeup}="enabled"
+# ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/io_poll}="1"

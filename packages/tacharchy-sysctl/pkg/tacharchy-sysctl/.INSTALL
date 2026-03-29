@@ -1,0 +1,109 @@
+#!/bin/bash
+# Tacharchy sysctl post-install script
+# Detects swap type and adjusts vm.swappiness accordingly
+
+set -e
+
+detect_swap_type() {
+    # Get swap devices
+    local swap_devices
+    swap_devices=$(swapon --show=NAME --noheadings 2>/dev/null || true)
+    
+    if [[ -z "$swap_devices" ]]; then
+        echo "info: no swap configured"
+        return 1
+    fi
+    
+    # Check each swap device
+    for device in $swap_devices; do
+        # Handle swap files by finding the underlying block device
+        if [[ -f "$device" ]]; then
+            # It's a swap file - find the filesystem it's on
+            local mount_point
+            mount_point=$(df --output=target "$device" | tail -1)
+            device=$(findmnt -n -o SOURCE "$mount_point" 2>/dev/null || echo "")
+            [[ -z "$device" ]] && continue
+        fi
+        
+        # Check if it's NVMe
+        if [[ "$device" == /dev/nvme* ]]; then
+            echo "nvme"
+            return 0
+        fi
+        
+        # Check for SSD vs HDD using rotational flag
+        local base_dev
+        base_dev=$(basename "$device")
+        # Handle partitions (nvme0n1p1 -> nvme0n1, sda1 -> sda)
+        base_dev=${base_dev%p[0-9]*}  # Strip partition suffix for NVMe
+        base_dev=${base_dev%%[0-9]}   # Strip trailing digits for sdX
+        
+        if [[ -f "/sys/block/$base_dev/queue/rotational" ]]; then
+            local rotational
+            rotational=$(cat "/sys/block/$base_dev/queue/rotational" 2>/dev/null || echo "1")
+            if [[ "$rotational" == "0" ]]; then
+                echo "ssd"
+                return 0
+            else
+                echo "hdd"
+                return 0
+            fi
+        fi
+    done
+    
+    # Default assumption
+    echo "unknown"
+    return 0
+}
+
+configure_swappiness() {
+    local swap_type
+    swap_type=$(detect_swap_type)
+    local sysctl_conf="/etc/sysctl.d/99-tacharchy-sysctl.conf"
+    
+    case "$swap_type" in
+        nvme)
+            echo "info: NVMe swap detected, setting vm.swappiness=100"
+            sed -i 's/^#*vm\.swappiness.*/vm.swappiness = 100/' "$sysctl_conf" 2>/dev/null || \
+                echo "vm.swappiness = 100" >> "$sysctl_conf"
+            ;;
+        ssd)
+            echo "info: SSD swap detected, setting vm.swappiness=60"
+            sed -i 's/^#*vm\.swappiness.*/vm.swappiness = 60/' "$sysctl_conf" 2>/dev/null || \
+                echo "vm.swappiness = 60" >> "$sysctl_conf"
+            ;;
+        hdd)
+            echo "info: HDD swap detected, setting vm.swappiness=10"
+            sed -i 's/^#*vm\.swappiness.*/vm.swappiness = 10/' "$sysctl_conf" 2>/dev/null || \
+                echo "vm.swappiness = 10" >> "$sysctl_conf"
+            ;;
+        *)
+            echo "info: Could not determine swap type, leaving vm.swappiness commented (use system default)"
+            ;;
+    esac
+}
+
+post_install() {
+    echo ":: Tacharchy sysctl package installed"
+    echo "   Configuration: /etc/sysctl.d/99-tacharchy-sysctl.conf"
+    echo ""
+    
+    # Configure swappiness based on swap type
+    configure_swappiness
+    
+    echo ""
+    echo ":: To apply settings now, run:"
+    echo "   sudo sysctl -p /etc/sysctl.d/99-tacharchy-sysctl.conf"
+    echo ""
+    echo ":: To customize, edit the config file and uncomment/adjust values."
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    echo ":: Tacharchy sysctl package removed"
+    echo "   Config file /etc/sysctl.d/99-tacharchy-sysctl.conf was preserved."
+    echo "   Remove manually if not needed: sudo rm /etc/sysctl.d/99-tacharchy-sysctl.conf"
+}

@@ -1,0 +1,22 @@
+pkgbase = tacharchy-foundation
+	pkgdesc = Meta-package for Tacharchy performance tuning layer
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/tacharchy/tacharchy
+	arch = any
+	license = MIT
+	depends = tacharchy-sysctl
+	depends = tacharchy-audio
+	depends = tacharchy-gpu
+	depends = tacharchy-network
+	depends = tacharchy-io
+	depends = tacharchy-cpu
+	depends = tacharchy-detect
+	optdepends = ethtool: For setting NIC ring buffers
+	optdepends = nvidia-utils: NVIDIA GPU support
+	optdepends = libva-mesa-driver: AMD VA-API support
+	optdepends = mesa-vdpau: AMD VDPAU support
+	optdepends = intel-media-driver: Intel VA-API support
+	optdepends = libva-utils: VA-API verification tool
+
+pkgname = tacharchy-foundation
