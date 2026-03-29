@@ -53,12 +53,12 @@ Fork Omarchy's installer system for Tacharchy, adapting branding and integrating
 
 Consume DankMaterialShell as-is (no fork, no rebrand). Port matugen theming work into DMS upstream.
 
-- [ ] Package DMS as dependency (consume existing DMS packages)
+- [x] Package DMS as dependency (consume existing DMS packages)
 - [ ] Port matugen/Material You theming integration into DMS (upstream contribution)
-- [ ] Integrate DMS into Tacharchy installer
-- [ ] Add `tacharchy status` — show current tuning state
-- [ ] Add `tacharchy benchmark` — before/after performance comparison
-- [ ] Add `tacharchy migrate` — timestamp-based migrations
+- [x] Integrate DMS into Tacharchy installer
+- [x] Add `tacharchy status` — show current tuning state
+- [x] Add `tacharchy benchmark` — before/after performance comparison
+- [x] Add `tacharchy migrate` — timestamp-based migrations
 - [ ] Test on clean Arch install (VM first, then real hardware)
 
 ### 1d: Hardware Detection Refinement
