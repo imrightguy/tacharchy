@@ -2,41 +2,49 @@
 
 ## Overview
 
-Tacharchy is a complete Linux desktop environment forked from [DankLinux/DMS](https://github.com/AvengeMedia/DankMaterialShell), with ideas from [Omarchy](https://github.com/basecamp/omarchy) and an original performance tuning layer.
+Tacharchy is a complete Linux desktop environment forked from [Omarchy](https://github.com/basecamp/omarchy), consuming [DankMaterialShell (DMS)](https://github.com/AvengeMedia/DankMaterialShell) as the desktop shell, with an original performance tuning layer.
 
-One codebase. One architecture. Go backend, Quickshell shell, matugen theming, cross-distro, multi-compositor. We take DMS's solid foundation, absorb Omarchy's best ideas natively, and add performance tuning on top.
+One codebase. One architecture. Fork Omarchy's installer, hardware detection, app configs, and theming. Consume DMS as-is for the desktop shell. Add performance tuning on top.
 
 ## Naming
 
 - **Tacharchy** — the project, the brand, the CLI
-- **TMS** — Tacharchy Material Shell, the desktop shell (forked from DMS, plugin-compatible)
+- **DMS** — DankMaterialShell, the desktop shell (consumed as-is, not forked)
 - **tacharchy-\*** — performance tuning packages (sysctl, cpu, gpu, audio, network, io)
 
 ## What We Fork
 
-### From DankLinux/DMS (foundation)
-- **Quickshell-based desktop shell** → rebranded as TMS
-- **Go backend + CLI** (`dms` → `tacharchy`)
+### From Omarchy (foundation)
+
+We fork Omarchy's entire codebase for the base system:
+
+- **Installer** — two-phase design (base install + first-boot configuration)
+- **Hardware detection** — per-vendor fixes for Intel, NVIDIA, AMD, Apple, ASUS, Framework, Dell, Surface
+- **Theme library** — 19 themes converted to matugen seed colors
+- **Migration system** — timestamp-based migrations for safe upgrades
+- **App configs** — per-app config templates (ghostty, kitty, alacritty, waybar, tmux, lazygit, fastfetch, starship)
+- **Webapp system** — install web apps as desktop entries with custom icons
+- **ISO build system** — Arch-based ISO with Limine bootloader, btrfs, snapper
+- **Profile system** — save/restore system configuration
+
+### Consume DMS (desktop shell)
+
+DankMaterialShell is consumed as-is — no fork, no rebrand. We port theming work into DMS itself:
+
+- **Quickshell-based desktop shell** — used directly as DMS
+- **Go backend + CLI** — `dms` command (extended via plugins if needed)
 - **Cross-distro packaging** — Arch, Fedora, Debian, Ubuntu, openSUSE, Gentoo, NixOS
 - **Multi-compositor support** — niri, Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM
-- **Material You theming** — matugen + dank16 dynamic wallpaper → palette
+- **Material You theming** — matugen + dank16 dynamic wallpaper → palette (ported into DMS)
 - **TUI installer** — charm-based interactive install with compositor/shell selection
-- **IPC system** — `tacharya ipc call ...` for programmatic control
-- **Plugin system** — DMS plugin API kept identical for compatibility
+- **IPC system** — `dms ipc call ...` for programmatic control
 - **Greeter support** — GDM/greetd integration
-- **Doctor/diagnostics** — `tacharya doctor`
+- **Doctor/diagnostics** — `dms doctor`
 
-### From Omarchy (ideas, not code)
-
-We absorb Omarchy's knowledge natively into the DMS codebase. No bash scripts imported.
-
-- **Hardware detection** — rewrite per-vendor fixes in Go (lspci checks, config writes)
-- **Theme library** — convert 19 colors.toml themes to matugen seed colors
-- **Migration system** — implement timestamp-based migrations in Go
-- **App configs** — port per-app config templates into TMS's theme pipeline
-- **Webapp system** — rebuild as Go CLI command
-- **Hidden desktop entries + custom icons** — port directly, no rewrite needed
 ### Original (performance tuning)
+
+Our unique contribution — neither Omarchy nor DMS touches system performance tuning:
+
 - **tacharchy-sysctl** — kernel parameter tuning with documented reasoning
 - **tacharchy-cpu** — Intel hybrid P/E core tuning, AMD preferred cores
 - **tacharchy-gpu** — NVIDIA/AMD/Intel driver optimizations
@@ -51,7 +59,7 @@ We absorb Omarchy's knowledge natively into the DMS codebase. No bash scripts im
 ```
 tacharchy                          # Status overview
 
-tacharchy install                  # TUI installer
+tacharchy install                  # TUI installer (forked from Omarchy)
 tacharchy update                   # Update system (migrations + packages)
 tacharchy update --firmware        # + firmware updates
 
@@ -64,16 +72,15 @@ tacharchy theme custom             # Create custom theme
 tacharchy status                   # Current tuning state
 tacharchy benchmark                # Before/after performance comparison
 
-tacharya config                    # Interactive configuration
-tacharya config export             # Export config as dotfiles
-tacharya config import             # Import config
+dms config                         # DMS interactive configuration
+dms theme                          # DMS theme controls
 
-tacharchy snapshot                 # Btrfs snapshot
+tacharchy snapshot                 # Btrfs snapshot (from Omarchy)
 tacharchy snapshot rollback        # Roll back
 
-tacharya ipc call <command>        # Programmatic shell control
-tacharya doctor                    # Diagnostic check
-tacharya migrate                   # Run pending migrations
+dms ipc call <command>             # Programmatic shell control
+dms doctor                         # DMS diagnostic check
+tacharchy migrate                  # Run pending migrations
 
 tacharchy remove                   # Clean uninstall
 ```
@@ -92,8 +99,6 @@ tacharchy remove                   # Clean uninstall
 | `tacharchy-cpu` | CPU scheduler tuning | Original + Omarchy hw detection |
 | `tacharchy-detect` | Hardware detection | Original + Omarchy hw detection |
 | `tacharchy-foundation` | Meta-package | Original |
-| `tms-shell` | Desktop shell (Quickshell) | Fork: DMS |
-| `tms-greeter` | Login greeter | Fork: DMS |
 
 ### Installer: Two-Phase Design
 
@@ -105,7 +110,7 @@ tacharchy remove                   # Clean uninstall
 - Bootloader setup (Limine) + btrfs + snapper
 - Reboot
 
-Headless and fast. Can be our ISO, Omarchy's ISO, or manual Arch install — all produce the same base system.
+Headless and fast. Forked from Omarchy installer.
 
 **Phase 2: First-Boot Configuration** — Fullscreen, beautiful, guided.
 
@@ -114,14 +119,12 @@ Runs on first login. This is the real Tacharchy experience:
 1. Welcome screen with Tacharchy branding
 2. Hardware detection (automatic, shows results)
 3. Compositor selection (niri, Hyprland, Sway, etc.)
-4. Desktop shell (TMS, Waybar, or none)
+4. Desktop shell (DMS, Waybar, or none)
 5. Theme (matugen: pick a wallpaper or named theme)
 6. Performance tuning (on by default, shows what will apply)
 7. Optional apps (all opt-in)
 8. Apply everything
-9. Done — shows `tacharya doctor` and next steps
-
-Could be built with TMS/Quickshell itself — a fullscreen QML app matching the shell's aesthetic.
+9. Done — shows `dms doctor` and next steps
 
 **ISO vs Existing Install:**
 - **Tacharchy ISO** — Phase 1 pre-done. User sees only Phase 2.
@@ -132,13 +135,15 @@ Same Phase 2 experience regardless.
 
 ### Theme System
 
-Single matugen engine. Wallpaper or seed color → Material You palette → applied to TMS shell, GTK, Qt, terminals, editors. One pipeline, one code path.
+Single matugen engine. Wallpaper or seed color → Material You palette → applied to DMS shell, GTK, Qt, terminals, editors. One pipeline, one code path.
 
 Named themes (from Omarchy's library) are converted to matugen seed colors. See [docs/THEMING.md](THEMING.md).
 
+Theming work is ported into DMS itself — matugen integration lives in the DMS codebase, not a separate Tacharchy fork.
+
 ### Hardware Detection
 
-Automatic per-vendor configuration:
+Automatic per-vendor configuration (forked from Omarchy):
 
 | Vendor | Detection | Fixes |
 |---|---|---|
@@ -152,10 +157,6 @@ Automatic per-vendor configuration:
 | Surface | Surface devices | Keyboard fix |
 | Broadcom | WiFi chips | Driver install |
 | Tuxedo | Backlight | Fix backlight control |
-
-## Plugin Compatibility
-
-TMS maintains full API compatibility with DMS plugins. All existing DMS plugins work without modification. The plugin registry at plugins.danklinux.com is supported, and Tacharchy may host its own registry in the future.
 
 ## Cross-Distro Support
 
@@ -171,16 +172,15 @@ TMS maintains full API compatibility with DMS plugins. All existing DMS plugins 
 
 ## Philosophy
 
-1. **Performance tuning is the core value** — everything else is borrowed and improved
+1. **Performance tuning is the core value** — everything else is forked from Omarchy, DMS is consumed as-is
 2. **We give back your freedom** — compositor, shell, theme, apps: your choice
 3. **No bullshit** — no censorship, no politics, no gatekeeping
-4. **Don't reinvent** — fork DMS as the foundation, absorb Omarchy's knowledge natively, build only what's missing
+4. **Don't reinvent** — fork Omarchy as the foundation, consume DMS as-is, build only what's missing (performance tuning)
 5. **Everything documented with reasoning** — every sysctl, every fix, every choice
 6. **Everything reversible** — one command to remove all traces
-7. **Plugin compatible** — DMS plugins work out of the box
 
 ## Sources
 
-- [DankLinux/DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) — shell, installer, cross-distro
-- [Omarchy](https://github.com/basecamp/omarchy) — hardware detection, themes, migrations, app configs
+- [Omarchy](https://github.com/basecamp/omarchy) — forked base: installer, hardware detection, themes, migrations, app configs
+- [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) — consumed desktop shell
 - [CachyOS](https://github.com/CachyOS/CachyOS-Settings) — sysctl tuning inspiration

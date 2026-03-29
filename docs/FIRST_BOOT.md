@@ -17,7 +17,7 @@ No matter how the user got here:
 
 ### Phase 1 — Base Install
 
-Handled before first boot.
+Handled before first boot. Forked from Omarchy installer.
 
 This phase only does the boring but necessary platform work:
 - Disk placement / partitioning
@@ -65,7 +65,7 @@ But it should not become a wiki article.
 
 The flow should be fast for people who want to keep moving:
 - recommend niri
-- recommend TMS
+- recommend DMS
 - enable performance tuning by default
 - recommend a default theme/wallpaper
 
@@ -129,7 +129,7 @@ Suggested defaults:
 ### 4. Desktop Shell
 
 Options:
-- **TMS** — full shell experience
+- **DMS** — full shell experience (consumed as-is)
 - **Minimal** — compositor + essential integrations only
 - **Custom** — skip shell, configure later
 
@@ -137,7 +137,7 @@ This is important because Christopher explicitly does **not** want forced choice
 
 ### 5. Theme / Visual Identity
 
-Since we now want **one theme engine**, this should all go through matugen.
+Since we use **one theme engine** (matugen, ported into DMS), this should all go through matugen.
 
 Input modes:
 - pick a bundled wallpaper
@@ -149,7 +149,7 @@ This is where the system begins to feel personal.
 
 ### 6. Performance Tuning
 
-This screen should not ask “do you want optimization?” in a dumb generic way.
+This screen should not ask "do you want optimization?" in a dumb generic way.
 
 Instead it should show what will be applied:
 - CPU tuning
@@ -182,7 +182,7 @@ This should feel like a curated menu, not an app store explosion.
 Show a clean progress screen with meaningful steps:
 - Detecting hardware quirks
 - Installing compositor
-- Installing shell
+- Installing DMS shell
 - Applying performance tuning
 - Generating theme
 - Writing configs
@@ -201,16 +201,16 @@ End with:
 Example:
 
 ```bash
-tacharchy doctor
+dms doctor
 tacharchy status
 tacharchy snapshot
 ```
 
 ## Architecture Notes
 
-## UI Technology
+### UI Technology
 
-The best fit is probably a **fullscreen TMS/Quickshell app**.
+The best fit is probably a **fullscreen DMS/Quickshell app**.
 
 Why:
 - it proves the shell stack early
@@ -222,7 +222,7 @@ Alternative:
 
 But long term, the fullscreen graphical setup is the stronger identity.
 
-## State Model
+### State Model
 
 The setup flow should be resumable.
 
@@ -238,7 +238,7 @@ Track setup progress in a small state file, e.g.:
 }
 ```
 
-## Recommended Documentation Hooks
+### Recommended Documentation Hooks
 
 The first-boot flow should link back to docs for deeper explanations:
 - hardware detection → `docs/HARDWARE.md`

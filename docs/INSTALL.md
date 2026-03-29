@@ -19,7 +19,7 @@ On first login, the Tacharchy fullscreen installer launches automatically (**Pha
 1. Welcome screen
 2. Hardware detection (automatic)
 3. Compositor selection
-4. Desktop shell (TMS, Waybar, or none)
+4. Desktop shell (DMS, Waybar, or none)
 5. Theme (wallpaper or named theme)
 6. Performance tuning
 7. Optional apps
@@ -32,9 +32,9 @@ This is the same experience whether you used the Omarchy ISO, the Tacharchy ISO,
 Limine + snapper gives you snapshot/rollback:
 
 ```bash
-tacharya snapshot              # Create a snapshot
-tacharya snapshot rollback     # Roll back
-tacharya snapshot list         # List snapshots
+tacharchy snapshot              # Create a snapshot
+tacharchy snapshot rollback     # Roll back
+tacharchy snapshot list         # List snapshots
 ```
 
 ### Tacharchy ISO (Future)
@@ -60,7 +60,7 @@ git clone https://github.com/imrightguy/tacharchy.git ~/.local/share/tacharchy
 
 1. **Preflight** — checks you're on Arch, have sudo, network, and disk space
 2. **Hardware detection** — identifies CPU, GPU, audio, storage, network, vendor-specific quirks
-3. **Installs packages** — TMS shell, performance tuning layer, compositor, apps
+3. **Installs packages** — DMS shell, performance tuning layer, compositor, apps
 4. **Applies tuning** — sysctls, I/O schedulers, CPU governor, audio RT priority, network BBR
 5. **Configures compositor** — sets up your chosen compositor with theme colors and keybinds
 6. **Applies theme** — matugen generates palette, applies to all apps
@@ -71,7 +71,7 @@ git clone https://github.com/imrightguy/tacharchy.git ~/.local/share/tacharchy
 ```bash
 tacharchy install --compositor niri       # Skip selection, use niri
 tacharchy install --compositor hyprland   # Use Hyprland
-tacharchy install --shell tms             # Use TMS desktop shell
+tacharchy install --shell dms             # Use DMS desktop shell
 tacharchy install --shell none            # No desktop shell, just compositor
 tacharchy install --theme tokyo-night     # Use named theme
 tacharchy install --no-tuning             # Skip performance tuning
@@ -90,43 +90,46 @@ paru -S tacharchy-foundation
 paru -S tacharchy-sysctl tacharchy-cpu tacharchy-gpu tacharchy-audio tacharchy-network tacharchy-io tacharchy-detect
 ```
 
-### TMS Shell
+### DMS Shell
+
+DMS is installed from upstream packages (not forked by Tacharchy):
 
 ```bash
-paru -S tms-shell-bin    # Stable release
-paru -S tms-shell-git    # Git (nightly) build
+paru -S dms-shell    # From DMS upstream (package name may vary)
 ```
+
+See [DankMaterialShell installation docs](https://danklinux.com/docs/dankmaterialshell/installation) for official DMS installation.
 
 ## Post-Install
 
 ### Verify Everything Works
 
 ```bash
-tacharya doctor          # Run diagnostics
-tacharya detect          # Show hardware detection results
-tacharya status          # Show tuning state
-tacharya benchmark       # Run before/after comparison
+dms doctor              # Run diagnostics
+tacharchy detect        # Show hardware detection results
+tacharchy status        # Show tuning state
+tacharchy benchmark     # Run before/after comparison
 ```
 
 ### Common First Steps
 
 ```bash
-tacharya theme set /path/to/wallpaper.jpg   # Set your wallpaper
-tacharya config                               # Open config editor
-tacharya snapshot                             # Create a baseline snapshot
+dms theme set /path/to/wallpaper.jpg   # Set your wallpaper
+dms config                               # Open config editor
+tacharchy snapshot                       # Create a baseline snapshot
 ```
 
 ## Uninstall
 
 ```bash
-tacharya remove          # Remove all Tacharchy configs and packages
+tacharchy remove          # Remove all Tacharchy configs and packages
 ```
 
 This removes:
 - All `/etc/tacharchy/` configs
 - All symlinks created by packages
 - Performance tuning packages
-- TMS shell
+- DMS shell (if installed via Tacharchy)
 - Restores backed-up originals
 
 Your compositor, apps, and personal files are not touched.
@@ -165,16 +168,16 @@ ping -c 1 archlinux.org
 ### Performance tuning not applying
 
 ```bash
-tacharya status          # Check what's applied
-tacharya doctor          # Run diagnostics
-tacharya detect          # Check hardware detection
+tacharchy status          # Check what's applied
+dms doctor                # Run diagnostics
+tacharchy detect          # Check hardware detection
 ```
 
 ### Theme not applying
 
 ```bash
-tacharya theme set /path/to/wallpaper.jpg  # Re-apply
-tacharya refresh all                        # Force reload all apps
+dms theme set /path/to/wallpaper.jpg  # Re-apply
+dms refresh all                        # Force reload all apps
 ```
 
 ### Audio crackling
@@ -182,5 +185,5 @@ tacharya refresh all                        # Force reload all apps
 ```bash
 # Verify realtime scheduling
 groups | grep audio       # Should show 'audio'
-tacharya doctor           # Check audio status
+dms doctor                # Check audio status
 ```

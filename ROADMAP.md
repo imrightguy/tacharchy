@@ -4,11 +4,11 @@
 
 - [x] Analyze CachyOS tuning (sysctls, kernel patches, scheduler)
 - [x] Analyze Omarchy architecture (install scripts, config layer, theming, hardware detection)
-- [x] Analyze DankLinux/DMS architecture (Quickshell shell, Go backend, cross-distro, multi-compositor, plugins)
-- [x] Define project vision: fork DMS + Omarchy, add performance tuning layer
-- [x] Name: **Tacharchy** (project), **TMS** (Tacharchy Material Shell, forked from DMS)
-- [x] Fork Omarchy and DankLinux/DMS for study
-- [x] Deep-dive both repo structures, catalog wins/losses/gaps
+- [x] Analyze DankLinux/DMS architecture (Quickshell shell, Go backend, cross-distro, multi-compositor)
+- [x] Define project vision: fork Omarchy, consume DMS, add performance tuning layer
+- [x] Name: **Tacharchy** (project), DMS stays DMS (not forked, not rebranded)
+- [x] Fork Omarchy for study
+- [x] Deep-dive Omarchy repo structure, catalog wins/losses/gaps
 - [x] Create GitHub repo with README, BRAND.md, LICENSE
 - [x] Write tuning reference docs (sysctl, cpu, gpu, audio, network, io)
 - [x] Build Phase 1a: 8 AUR performance tuning packages
@@ -28,20 +28,18 @@ Our unique value — neither Omarchy nor DMS touches system performance tuning.
 - [x] `tacharchy-detect` — hardware detection and recommendation engine
 - [x] `tacharchy-foundation` — meta-package
 
-### 1b: Fork DMS → TMS
+### 1b: Consume DMS + Port Theming
 
-Fork DankMaterialShell, rebrand as TMS, maintain plugin API compatibility.
+Consume DankMaterialShell as-is (no fork, no rebrand). Port matugen theming work into DMS upstream.
 
-- [ ] Fork DankMaterialShell repo
-- [ ] Rebrand: DMS → TMS (logo, colors, CLI name)
-- [ ] Ensure DMS plugin API compatibility (all existing plugins work)
-- [ ] Port `dms` Go CLI → `tacharchy` CLI with our subcommands added
+- [ ] Package DMS as dependency (consume existing DMS packages)
+- [ ] Port matugen/Material You theming integration into DMS (upstream contribution)
 - [ ] Port bash installer (Omarchy-style) with hardware detection and auto-config
 - [ ] Integrate Omarchy's hardware detection into the installer
 - [ ] Integrate performance tuning package installation into the installer
-- [ ] Add `tacharya status` — show current tuning state
-- [ ] Add `tacharya benchmark` — before/after performance comparison
-- [ ] Add `tacharya migrate` — Omarchy-style timestamp-based migrations
+- [ ] Add `tacharchy status` — show current tuning state
+- [ ] Add `tacharchy benchmark` — before/after performance comparison
+- [ ] Add `tacharchy migrate` — Omarchy-style timestamp-based migrations
 - [ ] Test on clean Arch install (VM first, then real hardware)
 
 ### 1c: Fork Omarchy Hardware Detection
@@ -60,14 +58,14 @@ Implement per-vendor hardware detection natively in Go (inspired by Omarchy's fi
 
 ### 1d: Theme System
 
-matugen: Material You palette generation from wallpaper or seed color.
+matugen: Material You palette generation from wallpaper or seed color. Ported into DMS.
 
 - [ ] Convert Omarchy's 19 themes to matugen seed colors
-- [ ] Ensure matugen dynamic theming works through TMS
+- [ ] Ensure matugen dynamic theming works through DMS
 - [ ] Create Tacharchy default theme (dark orange brand)
 - [ ] Per-app theme configs: neovim, VS Code, btop, Chromium, ghostty, kitty, alacritty
 - [ ] Light/dark mode support
-- [ ] Hot-reload system (`tacharya refresh-*`)
+- [ ] Hot-reload system (`dms refresh` or matugen hooks)
 
 ### 1e: App Ecosystem
 
@@ -92,7 +90,7 @@ Port Omarchy's app configs and webapp system.
 - [ ] Install script live (curl tacharchy.sh | sh)
 - [ ] Documentation site (tacharchy.com)
 - [ ] Screenshots for each compositor + theme combo
-- [ ] `tacharya remove` — clean uninstall
+- [ ] `tacharchy remove` — clean uninstall
 - [ ] Release v0.1.0-alpha
 - [ ] Announce on Reddit, forums, Discord
 
@@ -118,8 +116,8 @@ Port Omarchy's app configs and webapp system.
 1. **Performance tuning is our unique contribution** — the piece nobody else provides, baked into a complete desktop
 2. **We give back your freedom** — compositor, shell, theme, apps: your choice
 3. **No bullshit** — no censorship, no politics, no gatekeeping
-4. **Don't reinvent** — fork what works, improve what doesn't, build only what's missing
+4. **Don't reinvent** — fork Omarchy as the foundation, consume DMS as-is, build only what's missing
 5. **Everything documented with reasoning** — every sysctl, every fix, every choice
 6. **Everything reversible** — one command to remove all traces
-7. **Plugin compatible** — DMS plugins work out of the box
+7. **DMS is consumed, not forked** — use DMS as-is, contribute theming work upstream
 8. **Wayland only** — no X11 support

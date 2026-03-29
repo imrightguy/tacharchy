@@ -108,17 +108,18 @@ tacharchy-detect --verbose    # Detailed output
 - Network (interfaces, link speed)
 - RAM amount
 
-### tms-shell-bin
+## DMS Shell
 
-TMS desktop shell (stable release). Forked from DankMaterialShell.
+DMS (DankMaterialShell) is consumed as-is from upstream packages:
 
-**Depends:** quickshell, matugen, cliphist
+```bash
+# Install DMS from upstream
+paru -S dms-shell    # Package name may vary, check DMS docs
+```
 
-### tms-shell-git
+See [DankMaterialShell installation docs](https://danklinux.com/docs/dankmaterialshell/installation) for official installation.
 
-TMS desktop shell (nightly build from git HEAD).
-
-**Depends:** quickshell-git, matugen, cliphist
+DMS is **not** packaged by Tacharchy — we use the official upstream packages.
 
 ## File Layout
 

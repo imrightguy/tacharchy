@@ -21,7 +21,7 @@ tacharchy/
 ├── docs/                   # Documentation
 │   ├── ARCHITECTURE.md     # System architecture and design
 │   ├── COMPOSITORS.md      # Supported Wayland compositors
-│   ├── THEMING.md          # Theme system (matugen + colors.toml)
+│   ├── THEMING.md          # Theme system (matugen + seed colors)
 │   ├── HARDWARE.md         # Hardware detection and vendor fixes
 │   ├── sysctl.md           # Sysctl tuning reference
 │   ├── cpu.md              # CPU tuning reference
@@ -38,11 +38,7 @@ tacharchy/
 │   ├── tacharchy-io/
 │   ├── tacharchy-cpu/
 │   └── tacharchy-detect/
-├── tms/                    # TMS shell (forked from DankMaterialShell)
-│   ├── quickshell/         # QML shell interface
-│   ├── core/               # Go backend + CLI
-│   └── distro/             # Cross-distro packaging specs
-├── themes/                 # Static theme packs (colors.toml format)
+├── themes/                 # Static theme packs (matugen seed colors)
 │   ├── tacharchy/          # Default (dark orange)
 │   └── ...
 └── migrations/             # Omarchy-style timestamped migrations
@@ -51,8 +47,8 @@ tacharchy/
 
 ## What We Fork
 
-- **[DankLinux/DMS](https://github.com/AvengeMedia/DankMaterialShell)** — TMS shell, Go backend, cross-distro packaging, plugins
-- **[Omarchy](https://github.com/basecamp/omarchy)** — Hardware detection, migrations, theme library, app configs
+- **[Omarchy](https://github.com/basecamp/omarchy)** — Installer, hardware detection, themes, migrations, app configs, ISO system
+- **[DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell)** — Consumed as-is for desktop shell
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full breakdown.
 
@@ -69,8 +65,8 @@ refactor(detect): simplify GPU detection logic
 
 ## Code Style
 
-- **Go:** follow the existing DMS/core patterns (standard gofmt, tests in same package)
-- **QML:** follow the existing DMS/quickshell patterns (Qt naming conventions)
+- **Go:** follow standard library patterns (standard gofmt, tests in same package)
+- **QML:** follow Qt naming conventions (when working with DMS theming contributions)
 - **Shell scripts:** `set -eEo pipefail`, helper functions in shared files
 - **Config files:** clear comments explaining *why*, not just *what*
 - **PKGBUILDs:** follow Arch packaging guidelines
@@ -100,39 +96,40 @@ See `docs/sysctl.md` for the reference format.
 
 ## Adding a Compositor
 
-1. Create config template in the TMS shell or config layer
+1. Create config template in the DMS config layer or standalone config
 2. Add theme integration (border colors, background, text)
 3. Add keybind defaults matching our consistency table
 4. Add to the compositor selection menu in the installer
-5. Test with TMS shell and standalone (no shell)
+5. Test with DMS shell and standalone (no shell)
 6. Test with multiple themes
 7. Document in `docs/COMPOSITORS.md`
 
 ## Adding a Theme
 
 1. Create directory in `themes/<name>/`
-2. Add `colors.toml` with the full color palette
+2. Add matugen seed color configuration
 3. Add per-app configs (neovim.lua, vscode.json, btop.theme, ghostty config, etc.)
 4. Add 1-3 background images
 5. Add `preview.png` (1280x720 screenshot)
 6. Test with all supported compositors
 7. Submit PR
 
-## TMS Plugin Compatibility
+## DMS Integration
 
-TMS maintains API compatibility with DMS plugins. When modifying the shell:
+DMS is consumed as-is, not forked. When contributing theming work:
 
-- **Do not** change the plugin API without discussion
-- **Do** add new plugin hooks (extending is fine)
-- **Test** with existing DMS plugins before merging
-- See [DankMaterialShell plugin docs](https://danklinux.com/docs/dankmaterialshell/plugins-overview)
+- **Check DMS upstream first** — theming features should be contributed to DMS, not forked
+- **Use DMS plugin system** for extensions when possible
+- **Follow DMS contribution guidelines** when submitting upstream PRs
+- See [DankMaterialShell docs](https://danklinux.com/docs) for integration patterns
 
 ## Reporting Issues
 
 Include:
 - Distro and version
 - Compositor and version
-- Output of `tacharya doctor`
+- Output of `dms doctor`
+- Output of `tacharchy detect`
 - Steps to reproduce
 - Expected vs actual behavior
 
