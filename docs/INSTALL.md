@@ -56,17 +56,30 @@ git clone https://github.com/imrightguy/tacharchy.git ~/.local/share/tacharchy
 ~/.local/share/tacharchy/install.sh
 ```
 
-### What It Does
+### Current State
 
-1. **Preflight** — checks you're on Arch, have sudo, network, and disk space
-2. **Hardware detection** — identifies CPU, GPU, audio, storage, network, vendor-specific quirks
-3. **Installs packages** — DMS shell, performance tuning layer, compositor, apps
-4. **Applies tuning** — sysctls, I/O schedulers, CPU governor, audio RT priority, network BBR
-5. **Configures compositor** — sets up your chosen compositor with theme colors and keybinds
-6. **Applies theme** — matugen generates palette, applies to all apps
-7. **First-run wizard** — timezone, keyboard layout, user preferences
+The repo already includes:
 
-### Flags
+1. **Preflight / installer foundation** — forked Omarchy-style install scaffolding
+2. **Performance packages** — the `tacharchy-*` tuning layer
+3. **CLI baseline** — `tacharchy status`, `tacharchy benchmark`, and `tacharchy migrate`
+4. **DMS integration groundwork** — installer/docs assume DMS is consumed upstream
+
+Still planned:
+
+5. **Clean-install validation** — VM first, then real hardware
+6. **Theming integration upstream** — matugen / Material You work contributed into DMS
+7. **First-run wizard polish** — compositor, theme, and app UX completed end-to-end
+
+### Current CLI
+
+```bash
+tacharchy status        # Show current tuning state
+tacharchy benchmark     # Save a benchmark snapshot
+tacharchy migrate       # Apply pending migrations
+```
+
+### Planned Install Flags
 
 ```bash
 tacharchy install --compositor niri       # Skip selection, use niri

@@ -33,7 +33,7 @@ Default sudo allows 3 password attempts before locking. Tacharchy increases this
 Omarchy provides a `omarchy-sudo-passwordless-toggle` command. Tacharchy should ship the same:
 
 ```bash
-tacharya config sudo-passwordless  # Toggle passwordless sudo
+tacharchy config sudo-passwordless  # Planned: toggle passwordless sudo
 ```
 
 ### Lockout limit

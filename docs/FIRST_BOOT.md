@@ -137,7 +137,7 @@ This is important because Christopher explicitly does **not** want forced choice
 
 ### 5. Theme / Visual Identity
 
-Since we use **one theme engine** (matugen, ported into DMS), this should all go through matugen.
+The target design uses **one theme engine** (matugen, integrated upstream into DMS), so this should all go through matugen.
 
 Input modes:
 - pick a bundled wallpaper

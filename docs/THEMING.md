@@ -2,7 +2,7 @@
 
 Tacharchy uses [matugen](https://github.com/InioX/matugen) as the single theme engine. It generates Material You color palettes from either a wallpaper image or a seed color, then applies them to your entire desktop through one pipeline.
 
-This theming system is ported into DMS (DankMaterialShell) itself — we contribute the matugen integration upstream rather than forking DMS.
+This theming system is the target design. Tacharchy plans to contribute matugen integration upstream into DMS (DankMaterialShell) rather than forking DMS.
 
 ## How It Works
 
@@ -28,7 +28,7 @@ dms theme set --dark                     # Toggle dark mode
 
 ## Named Themes
 
-The 19 Omarchy themes are converted to matugen seed colors. When you pick a named theme, matugen generates the full Material You palette from that seed:
+The 19 Omarchy themes are planned as matugen seed-color presets. When that work lands, picking a named theme will let matugen generate the full Material You palette from that seed:
 
 | Theme | Seed Color | Style |
 |---|---|---|
@@ -103,7 +103,7 @@ The Tacharchy default uses `#FF6B00` (dark orange) as the seed color on a dark b
 
 ## Integration with DMS
 
-The matugen theming integration is contributed upstream to DMS:
+The intended integration path is upstream into DMS:
 
 - **No fork** — DMS stays DMS, we don't create a separate "TMS" shell
 - **Upstream contribution** — theming features become part of DMS itself

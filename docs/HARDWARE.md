@@ -1,11 +1,11 @@
 # Hardware Detection
 
-Tacharchy automatically detects your hardware and applies appropriate fixes, drivers, and optimizations. Detection happens during installation and can be re-run anytime with `tacharya detect`.
+Tacharchy automatically detects your hardware and applies appropriate fixes, drivers, and optimizations. Detection happens during installation and is intended to be re-runnable via `tacharchy detect` once that command is wired into the main CLI.
 
 ## Detection Flow
 
 ```
-tacharya detect
+tacharchy detect
   ├── CPU vendor and model
   │   ├── Intel (hybrid P/E? PTL? specific model?)
   │   ├── AMD (preferred cores? specific model?)

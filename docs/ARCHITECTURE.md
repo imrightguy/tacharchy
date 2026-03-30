@@ -20,7 +20,7 @@ We fork Omarchy's entire codebase for the base system:
 
 - **Installer** — two-phase design (base install + first-boot configuration)
 - **Hardware detection** — per-vendor fixes for Intel, NVIDIA, AMD, Apple, ASUS, Framework, Dell, Surface
-- **Theme library** — 19 themes converted to matugen seed colors
+- **Theme library** — planned: 19 themes converted to matugen seed colors
 - **Migration system** — timestamp-based migrations for safe upgrades
 - **App configs** — per-app config templates (ghostty, kitty, alacritty, waybar, tmux, lazygit, fastfetch, starship)
 - **Webapp system** — install web apps as desktop entries with custom icons
@@ -29,13 +29,13 @@ We fork Omarchy's entire codebase for the base system:
 
 ### Consume DMS (desktop shell)
 
-DankMaterialShell is consumed as-is — no fork, no rebrand. We port theming work into DMS itself:
+DankMaterialShell is consumed as-is — no fork, no rebrand. Theming work is planned as an upstream DMS contribution, not a Tacharchy fork:
 
 - **Quickshell-based desktop shell** — used directly as DMS
 - **Go backend + CLI** — `dms` command (extended via plugins if needed)
 - **Cross-distro packaging** — Arch, Fedora, Debian, Ubuntu, openSUSE, Gentoo, NixOS
 - **Multi-compositor support** — niri, Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM
-- **Material You theming** — matugen + dank16 dynamic wallpaper → palette (ported into DMS)
+- **Material You theming** — planned matugen integration upstream in DMS
 - **TUI installer** — charm-based interactive install with compositor/shell selection
 - **IPC system** — `dms ipc call ...` for programmatic control
 - **Greeter support** — GDM/greetd integration
@@ -56,33 +56,28 @@ Our unique contribution — neither Omarchy nor DMS touches system performance t
 
 ## CLI
 
-```
-tacharchy                          # Status overview
+```bash
+# Implemented today
+tacharchy status                   # Current tuning state
+tacharchy benchmark                # Before/after performance comparison
+tacharchy migrate                  # Run pending migrations
 
+# Planned CLI surface
 tacharchy install                  # TUI installer (forked from Omarchy)
 tacharchy update                   # Update system (migrations + packages)
 tacharchy update --firmware        # + firmware updates
-
 tacharchy detect                   # Hardware report + recommendations
-
 tacharchy theme list               # List themes
 tacharchy theme set <name|path>    # Apply static or dynamic (wallpaper) theme
 tacharchy theme custom             # Create custom theme
-
-tacharchy status                   # Current tuning state
-tacharchy benchmark                # Before/after performance comparison
+tacharchy snapshot                 # Btrfs snapshot (from Omarchy)
+tacharchy snapshot rollback        # Roll back
+tacharchy remove                   # Clean uninstall
 
 dms config                         # DMS interactive configuration
 dms theme                          # DMS theme controls
-
-tacharchy snapshot                 # Btrfs snapshot (from Omarchy)
-tacharchy snapshot rollback        # Roll back
-
 dms ipc call <command>             # Programmatic shell control
 dms doctor                         # DMS diagnostic check
-tacharchy migrate                  # Run pending migrations
-
-tacharchy remove                   # Clean uninstall
 ```
 
 ## Components
@@ -137,9 +132,9 @@ Same Phase 2 experience regardless.
 
 Single matugen engine. Wallpaper or seed color → Material You palette → applied to DMS shell, GTK, Qt, terminals, editors. One pipeline, one code path.
 
-Named themes (from Omarchy's library) are converted to matugen seed colors. See [docs/THEMING.md](THEMING.md).
+Named themes (from Omarchy's library) are planned as matugen seed-color presets. See [docs/THEMING.md](THEMING.md).
 
-Theming work is ported into DMS itself — matugen integration lives in the DMS codebase, not a separate Tacharchy fork.
+Theming work is intended to land in DMS itself — matugen integration should live in the DMS codebase, not a separate Tacharchy fork.
 
 ### Hardware Detection
 

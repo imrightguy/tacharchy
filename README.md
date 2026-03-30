@@ -16,15 +16,15 @@
 ═══════════════════════════════════════════════════════════════
 ```
 
-![Status](https://img.shields.io/badge/status-design--phase-orange)
-![Phase](https://img.shields.io/badge/phase-research--planning-blue)
+![Status](https://img.shields.io/badge/status-prototype-orange)
+![Phase](https://img.shields.io/badge/phase-foundation-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Arch](https://img.shields.io/badge/arch-linux-blue)
 ![FOSS](https://img.shields.io/badge/foss-defaults-brightgreen)
 
 # Tacharchy: Fast Freedom — Linux Desktop Tuned for Performance
 
-**Status:** 🎨 Design & Research Phase | **Target:** Linux users who want a fast, beautiful desktop
+**Status:** 🛠️ Prototype foundation built | **Target:** Linux users who want a fast, beautiful desktop
 
 ---
 
@@ -53,13 +53,14 @@ Linux desktops are slow, power-hungry, and poorly tuned:
 # Install from Tacharchy ISO or add to existing Arch
 curl -fsSL https://install.tacharchy.com | sh
 
-# Hardware detection (automatic)
-tacharchy detect
+# Check current tuning state
+tacharchy status
 
-# One-command tuning
-tacharya install --compositor niri --shell dms
+# Run a quick benchmark
+tacharchy benchmark
 
-# Reboot into a tuned, themed desktop
+# Apply any pending migrations
+tacharchy migrate
 ```
 
 **Fast by default. Beautiful by design. Freedom always.**
@@ -74,7 +75,7 @@ We fork Omarchy's entire installer and configuration system:
 
 - **Two-phase installer** — minimal base install → fullscreen first-boot config
 - **Hardware detection** — per-vendor fixes (Intel, NVIDIA, AMD, Apple, ASUS, Framework, Dell, Surface)
-- **Theme library** — 19 themes converted to matugen seed colors
+- **Theme library** — planned: 19 themes converted to matugen seed colors
 - **Migration system** — timestamp-based migrations for safe upgrades
 - **App configs** — per-app templates (ghostty, kitty, alacritty, waybar, tmux, lazygit, fastfetch)
 - **Webapp system** — install web apps as desktop entries
@@ -88,8 +89,8 @@ DankMaterialShell is consumed as-is — no fork, no rebrand:
 - **Go backend + CLI** — `dms` command for full control
 - **Cross-distro packaging** — Arch, Fedora, Debian, Ubuntu, openSUSE, Gentoo, NixOS
 - **Multi-compositor support** — niri, Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM
-- **Material You theming** — matugen integration (contributed upstream to DMS)
-- **TUI installer** — charm-based interactive install
+- **Material You theming** — planned matugen integration upstream in DMS
+- **TUI installer** — planned interactive install flow
 
 ### Part 3: Performance Tuning Layer (Original)
 
@@ -197,28 +198,30 @@ paru -S tacharchy-foundation
 
 ## 🚧 Current Status
 
-**This repository is in the design and research phase.**
+**This repository is past pure planning and into prototype foundation work.**
 
-No implementation code exists yet. This is a knowledge base capturing:
+What already exists:
 - ✅ Design philosophy and requirements
 - ✅ Research on existing solutions
 - ✅ Complete architecture specification
 - ✅ Fork strategy (Omarchy) and consume strategy (DMS)
-- ✅ 8 performance tuning packages (complete)
-- ⏳ Desktop integration (not started)
+- ✅ 8 performance tuning packages
+- ✅ Forked installer baseline
+- ✅ Initial Tacharchy CLI (`status`, `benchmark`, `migrate`)
+- ⏳ Desktop integration and clean-install validation
 
-**When will implementation begin?**
-- Architecture is complete
-- Design decisions are documented
-- Looking for community feedback before writing code
+**What happens next?**
+- Validate the installer flow on a clean Arch VM
+- Finish the upstream DMS theming path
+- Keep tightening docs so they match the real implementation
 
 ---
 
 ## 🤝 Contributing
 
-**Currently:** Design feedback and discussion welcome!
+**Currently:** Prototype foundation work, validation, and doc cleanup.
 
-**Upcoming:** Implementation planning will begin after design phase locks.
+**Upcoming:** Clean-install testing, DMS theming upstream work, and installer polish.
 
 **Important:** We do NOT fork DMS (DankMaterialShell). We consume DMS as-is and contribute theming work upstream.
 
@@ -251,8 +254,10 @@ No implementation code exists yet. This is a knowledge base capturing:
 
 ### Phase 1: Foundation (Arch Linux)
 - ✅ Performance tuning packages (8 AUR packages)
-- ⏳ Fork Omarchy installer and hardware detection
-- ⏳ Consume DMS + port theming upstream
+- ✅ Forked Omarchy installer baseline
+- ✅ Added Tacharchy CLI foundation (`status`, `benchmark`, `migrate`)
+- ⏳ Clean-install validation in VM / real hardware
+- ⏳ Port matugen / Material You theming upstream into DMS
 - ⏳ Theme system (matugen, 19 themes)
 - ⏳ App ecosystem (configs, webapps)
 - ⏳ ISO build system
