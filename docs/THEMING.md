@@ -15,7 +15,11 @@ One engine, one pipeline, every app themed the same way.
 
 ## Tacharchy Theme Composer
 
-The next real step is a **GTK / Qt / TUI theme composer**.
+The next architectural step is a **GTK / Qt / TUI theme composer**, but not the next implementation priority.
+
+This may eventually deserve its **own standalone project**, but it should still be designed in the open inside Tacharchy because the desktop vision depends on it.
+
+First, Tacharchy needs to stabilize the desktop layer, installer flow, compositor support, and core UX. The composer should land after the features it is supposed to unify are stable enough to target.
 
 Instead of hand-maintaining separate theme logic for every surface, Tacharchy should own a composer layer that:
 

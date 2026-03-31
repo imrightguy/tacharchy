@@ -211,8 +211,9 @@ What already exists:
 
 **What happens next?**
 - Validate the installer flow on a clean Arch VM
-- Define and build the Tacharchy-controlled desktop layer
+- Stabilize the Tacharchy-controlled desktop layer and core features
 - Keep tightening docs so they match the real implementation
+- Then build the cross-surface Theme Composer on top of that stable base
 
 ---
 

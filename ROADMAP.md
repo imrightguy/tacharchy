@@ -78,7 +78,10 @@ Refine hardware detection with native Go implementation (building on forked Omar
 
 A Tacharchy-controlled theme pipeline: wallpaper or seed color → generated palette → semantic tokens → composed outputs for shell, GTK, Qt, and TUI surfaces.
 
-- [ ] Build Tacharchy Theme Composer (shared semantic-token layer)
+**Priority note:** stabilize the desktop layer, installer flow, and core feature set before spending real engineering effort on the Theme Composer.
+
+- [ ] Stabilize compositor/session integration and core desktop features first
+- [ ] Design Tacharchy Theme Composer here first, with the option to extract it into its own project later
 - [ ] Add GTK composer output
 - [ ] Add Qt composer output
 - [ ] Add TUI/terminal composer output

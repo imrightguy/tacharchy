@@ -126,7 +126,7 @@ Single theme engine. Wallpaper or seed color → generated palette → semantic 
 
 Named themes (from Omarchy's library) are planned as Tacharchy presets / seed-color themes. See [docs/THEMING.md](THEMING.md).
 
-Theming should live in Tacharchy-owned tooling so the project controls its own UX path. The key missing piece is a **Theme Composer** that can translate one canonical token model into GTK, Qt, and TUI outputs consistently instead of treating each app family as a separate theming problem.
+Theming should live in Tacharchy-owned tooling so the project controls its own UX path. The key missing piece is a **Theme Composer** that can translate one canonical token model into GTK, Qt, and TUI outputs consistently instead of treating each app family as a separate theming problem. It may later be extracted as its own project, but the design work belongs in Tacharchy right now. Implementation should follow stabilization of the desktop layer rather than racing ahead of the features it needs to unify.
 
 ### Hardware Detection
 
