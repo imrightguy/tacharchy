@@ -117,6 +117,7 @@ Our unique contribution — 8 AUR packages that tune your system:
 
 ### 🎨 **Beautiful Theming**
 - matugen Material You theming (wallpaper → palette)
+- Theme Composer direction for **GTK + Qt + TUI** consistency
 - 19 pre-built themes (Tokyo Night, Nord, Rose Pine, Gruvbox, Catppuccin, etc.)
 - Dark orange Tacharchy default (τ logo, "Fast Freedom")
 - Hot-reload system — change wallpaper, entire desktop updates

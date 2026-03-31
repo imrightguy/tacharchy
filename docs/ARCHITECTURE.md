@@ -122,11 +122,11 @@ Same Phase 2 experience regardless.
 
 ### Theme System
 
-Single theme engine. Wallpaper or seed color → generated palette → applied to the Tacharchy desktop layer, GTK, Qt, terminals, and editors. One pipeline, one code path.
+Single theme engine. Wallpaper or seed color → generated palette → semantic tokens → composed outputs for the Tacharchy desktop layer, GTK, Qt, terminals, editors, and TUIs. One pipeline, one code path.
 
 Named themes (from Omarchy's library) are planned as Tacharchy presets / seed-color themes. See [docs/THEMING.md](THEMING.md).
 
-Theming should live in Tacharchy-owned tooling so the project controls its own UX path.
+Theming should live in Tacharchy-owned tooling so the project controls its own UX path. The key missing piece is a **Theme Composer** that can translate one canonical token model into GTK, Qt, and TUI outputs consistently instead of treating each app family as a separate theming problem.
 
 ### Hardware Detection
 

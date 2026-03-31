@@ -7,11 +7,29 @@ Tacharchy uses [matugen](https://github.com/InioX/matugen) as the planned theme 
 ```text
 Input (wallpaper or seed color)
   → matugen generates palette
-  → Tacharchy theme tooling maps palette roles
-  → shell, GTK, Qt, terminals, editors, and app configs are regenerated
+  → Tacharchy Theme Composer maps palette roles into semantic tokens
+  → composers/renderers emit configs for shell, GTK, Qt, terminals, editors, and app configs
 ```
 
 One engine, one pipeline, every app themed the same way.
+
+## Tacharchy Theme Composer
+
+The next real step is a **GTK / Qt / TUI theme composer**.
+
+Instead of hand-maintaining separate theme logic for every surface, Tacharchy should own a composer layer that:
+
+- takes one canonical palette and semantic token set
+- translates it into **GTK**, **Qt**, and **TUI/terminal** targets consistently
+- normalizes contrast, accent usage, borders, selection states, and error/warning/success colors
+- lets Tacharchy ship one visual identity across graphical apps and terminal tools
+
+That means the theme pipeline becomes:
+
+- **palette generation** — wallpaper or seed color → source palette
+- **semantic mapping** — background, surface, primary, secondary, destructive, muted, focus, etc.
+- **target composition** — GTK CSS/settings, Qt palettes, terminal/TUI color sets, editor themes, shell styles
+- **export + reload** — write configs and refresh affected components
 
 ## Applying Themes
 
@@ -60,24 +78,16 @@ tacharchy theme wallpaper set /path/to/wall2.jpg --monitor HDMI-A-1
 
 ## Per-App Theming
 
-The generated palette will be applied to:
+The generated palette will be applied through composer targets:
 
-| App | Config | Format |
+| Target | Output examples | Format |
 |---|---|---|
-| Tacharchy shell / panel | project config | palette roles |
-| GTK apps | CSS / `settings.ini` | gtk colors |
-| Qt apps | qt6ct/qt5ct | palette colors |
-| ghostty | `config` | palette mapping |
-| kitty | `kitty.conf` | color definitions |
-| alacritty | `alacritty.toml` | color definitions |
-| neovim | theme file | highlight groups |
-| VS Code | JSON theme | workbench colors |
-| btop | `btop.theme` | color definitions |
-| Chromium/Brave | CSS override | theme colors |
-| tmux | `tmux.conf` | color definitions |
-| starship | `starship.toml` | color definitions |
-| fastfetch | `config.jsonc` | color definitions |
-| fzf | `fzf.colors` | color definitions |
+| Tacharchy shell / panel | shell theme config | semantic roles |
+| GTK composer | CSS / `settings.ini` / theme overrides | gtk colors |
+| Qt composer | qt6ct/qt5ct / kvantum / palette exports | palette colors |
+| TUI composer | ghostty, kitty, alacritty, tmux, btop, fzf, fastfetch | terminal/TUI colors |
+| Editor composer | neovim, VS Code and similar tools | highlight/theme files |
+| Browser/app overrides | Chromium/Brave and app-specific overrides | CSS / config snippets |
 
 ### Hot Reload
 
