@@ -170,4 +170,4 @@ Automatic per-vendor configuration (forked from Omarchy):
 
 - [Omarchy](https://github.com/basecamp/omarchy) — forked base: installer, hardware detection, themes, migrations, app configs
 - [CachyOS](https://github.com/CachyOS/CachyOS-Settings) — sysctl tuning inspiration
-- External Wayland shell ecosystems — studied for lessons, not adopted as hard dependencies
+- External Wayland shell ecosystems — studied for lessons, not adopted as hard dependencies or fork bases

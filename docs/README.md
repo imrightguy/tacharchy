@@ -25,7 +25,7 @@ Every value documented with reasoning, tradeoffs, and sources.
 - [First Boot](FIRST_BOOT.md) — Two-phase install philosophy and fullscreen onboarding flow
 - [Compositors](COMPOSITORS.md) — Supported Wayland compositors, keybinds, and desktop-layer options
 - [Theming](THEMING.md) — Tacharchy theme pipeline, named themes, per-app theming, custom themes
-- [Shell Reference Notes](SHELL_REFERENCE.md) — Extracted patterns from external shell projects without taking on their dependency baggage
+- [Shell Reference Notes](SHELL_REFERENCE.md) — Extracted patterns from external shell projects without taking on their dependency baggage or forking them as the base
 - [Hardware Detection](HARDWARE.md) — Per-vendor fixes, GPU/CPU/audio/storage detection
 - [Security](SECURITY.md) — Firewall, sudo, kernel hardening notes
 

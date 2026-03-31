@@ -150,6 +150,8 @@ Noctalia's settings model is powerful, but large.
 
 ## Current recommendation
 
+Tacharchy should **not fork Noctalia** for the same reason it should not depend on DMS: the shell may be excellent, but Tacharchy should not build its identity on another project's ecosystem, pace, social surface, or fork debt.
+
 Tacharchy should borrow **architecture patterns**, not codebase identity:
 
 - modular shell root
@@ -165,3 +167,9 @@ But implementation priority stays:
 2. stabilize desktop/session architecture
 3. then build the Theme Composer
 4. then widen the shell surface
+
+So the Noctalia policy is:
+- study it
+- extract patterns from it
+- do not fork it as the Tacharchy base
+- do not let Tacharchy depend on its custom fork stack or project gravity
