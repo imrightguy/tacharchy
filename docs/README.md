@@ -26,6 +26,7 @@ Every value documented with reasoning, tradeoffs, and sources.
 - [Compositors](COMPOSITORS.md) — Supported Wayland compositors, keybinds, and desktop-layer options
 - [Theming](THEMING.md) — Tacharchy theme pipeline, named themes, per-app theming, custom themes
 - [Shell Reference Notes](SHELL_REFERENCE.md) — Extracted patterns from external shell projects without taking on their dependency baggage or forking them as the base
+- [Shell Skeleton](SHELL_SKELETON.md) — Concrete target structure for Tacharchy's desktop layer during the stabilization phase
 - [Hardware Detection](HARDWARE.md) — Per-vendor fixes, GPU/CPU/audio/storage detection
 - [Security](SECURITY.md) — Firewall, sudo, kernel hardening notes
 
