@@ -89,6 +89,9 @@ Tacharchy is Wayland only. No X11 support is planned.
 ### Tacharchy Shell (planned)
 The full desktop-layer experience: launcher, bar, lock flow, notifications, app menu, and theme integration under Tacharchy control.
 
+### DMS (optional external shell)
+A valid user-selectable shell option for people who want it. Tacharchy may integrate with it, but DMS is not the architectural center of the project.
+
 ### Waybar Stack
 A modular stack using compositor-native or standard Wayland pieces.
 

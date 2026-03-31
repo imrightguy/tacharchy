@@ -36,6 +36,7 @@ Tacharchy owns the desktop layer instead of depending on DMS:
 - **Installer-first UX** — first boot assembles the desktop experience from Tacharchy-managed components
 - **CLI and tooling** — Tacharchy commands remain the primary interface for status, migrations, and future desktop controls
 - **Concrete stabilization target** — see [docs/SHELL_SKELETON.md](SHELL_SKELETON.md) for the desktop-layer structure Tacharchy should actually build
+- **External shell options remain valid** — DMS or other shells may still be offered as user-selectable integrations, just not as the architectural center of Tacharchy
 
 ### Original (performance tuning)
 

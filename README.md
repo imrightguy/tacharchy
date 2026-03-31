@@ -30,7 +30,7 @@
 
 ## What Is Tacharchy?
 
-**Tacharchy** is a performance-first Linux desktop project forked from [Omarchy](https://github.com/basecamp/omarchy), focused on installer ergonomics, hardware-aware defaults, and an original tuning layer — without depending on DMS.
+**Tacharchy** is a performance-first Linux desktop project forked from [Omarchy](https://github.com/basecamp/omarchy), focused on installer ergonomics, hardware-aware defaults, and an original tuning layer — without depending on DMS as its project base.
 
 ```text
 Part 1: Fork Omarchy        → Installer, hardware detection, migrations, UX patterns
@@ -89,6 +89,7 @@ Tacharchy now owns its desktop direction instead of depending on DMS:
 - **Compositor-agnostic approach** — support multiple Wayland compositors without tying the project to one external shell ecosystem
 - **Theme pipeline we control** — wallpaper / seed-color driven theming integrated on our terms
 - **Installer-first UX** — the first-boot flow becomes the place where shell and app choices are assembled
+- **User choice stays open** — external shells like DMS can still remain installable/selectable as options without becoming the foundation of Tacharchy
 
 ### Part 3: Performance Tuning Layer (Original)
 
@@ -223,7 +224,7 @@ What already exists:
 
 **Upcoming:** Clean-install testing, Tacharchy desktop-layer design, and installer polish.
 
-**Important:** Tacharchy is no longer built around DMS. The project owns its own desktop direction.
+**Important:** Tacharchy is no longer built around DMS. The project owns its own desktop direction, while still allowing users to choose external shells if they want them.
 
 ---
 

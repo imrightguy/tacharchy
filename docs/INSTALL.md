@@ -19,7 +19,7 @@ On first login, the Tacharchy fullscreen installer launches automatically (**Pha
 1. Welcome screen
 2. Hardware detection (automatic)
 3. Compositor selection
-4. Desktop layer selection (Tacharchy shell, Waybar stack, or minimal)
+4. Desktop layer selection (Tacharchy shell, DMS, Waybar stack, or minimal)
 5. Theme (wallpaper or named theme)
 6. Performance tuning
 7. Optional apps
@@ -63,7 +63,7 @@ The repo already includes:
 1. **Preflight / installer foundation** — forked Omarchy-style install scaffolding
 2. **Performance packages** — the `tacharchy-*` tuning layer
 3. **CLI baseline** — `tacharchy status`, `tacharchy benchmark`, and `tacharchy migrate`
-4. **Desktop-layer pivot** — installer/docs now move away from DMS and toward Tacharchy-owned UX
+4. **Desktop-layer pivot** — Tacharchy is no longer built around DMS, but external shells can still remain selectable user options
 
 Still planned:
 
@@ -85,6 +85,7 @@ tacharchy migrate       # Apply pending migrations
 tacharchy install --compositor hyprland   # Use Hyprland
 tacharchy install --compositor sway       # Use Sway
 tacharchy install --shell tacharchy       # Use the Tacharchy desktop layer
+tacharchy install --shell dms             # Use DMS as an external shell option
 tacharchy install --shell none            # No desktop shell, just compositor
 tacharchy install --theme tokyo-night     # Use named theme
 tacharchy install --no-tuning             # Skip performance tuning
