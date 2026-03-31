@@ -64,8 +64,8 @@ But it should not become a wiki article.
 ### 3. Defaults should be sane
 
 The flow should be fast for people who want to keep moving:
-- recommend niri
-- recommend DMS
+- recommend a stable Tacharchy-supported compositor
+- recommend the Tacharchy desktop layer
 - enable performance tuning by default
 - recommend a default theme/wallpaper
 
@@ -110,11 +110,10 @@ This builds trust immediately.
 ### 3. Compositor Choice
 
 Primary candidates:
-- niri
 - Hyprland
 - Sway
 - labwc
-- other DMS-supported compositors later
+- other Tacharchy-supported compositors later
 
 Each option should show:
 - what kind of compositor it is
@@ -122,14 +121,14 @@ Each option should show:
 - current support quality
 
 Suggested defaults:
-- **Recommended:** niri
+- **Recommended:** Sway or another stability-first compositor
 - **Power user / highly configurable:** Hyprland
 - **Stable / traditional tiling:** Sway
 
-### 4. Desktop Shell
+### 4. Desktop Layer
 
 Options:
-- **DMS** — full shell experience (consumed as-is)
+- **Tacharchy** — full desktop-layer experience under project control
 - **Minimal** — compositor + essential integrations only
 - **Custom** — skip shell, configure later
 
@@ -137,7 +136,7 @@ This is important because Christopher explicitly does **not** want forced choice
 
 ### 5. Theme / Visual Identity
 
-The target design uses **one theme engine** (matugen, integrated upstream into DMS), so this should all go through matugen.
+The target design uses **one theme engine** (matugen through Tacharchy-owned tooling), so this should all go through the same theme pipeline.
 
 Input modes:
 - pick a bundled wallpaper
@@ -182,7 +181,7 @@ This should feel like a curated menu, not an app store explosion.
 Show a clean progress screen with meaningful steps:
 - Detecting hardware quirks
 - Installing compositor
-- Installing DMS shell
+- Installing Tacharchy desktop layer
 - Applying performance tuning
 - Generating theme
 - Writing configs
@@ -201,8 +200,8 @@ End with:
 Example:
 
 ```bash
-dms doctor
 tacharchy status
+tacharchy migrate
 tacharchy snapshot
 ```
 
@@ -210,7 +209,7 @@ tacharchy snapshot
 
 ### UI Technology
 
-The best fit is probably a **fullscreen DMS/Quickshell app**.
+The best fit is probably a **fullscreen Tacharchy-owned setup app**.
 
 Why:
 - it proves the shell stack early

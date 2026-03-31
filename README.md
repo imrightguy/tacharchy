@@ -30,11 +30,11 @@
 
 ## What Is Tacharchy?
 
-**Tacharchy** is a complete Linux desktop environment forked from [Omarchy](https://github.com/basecamp/omarchy), consuming [DankMaterialShell (DMS)](https://github.com/AvengeMedia/DankMaterialShell) as the desktop shell, with an original performance tuning layer.
+**Tacharchy** is a performance-first Linux desktop project forked from [Omarchy](https://github.com/basecamp/omarchy), focused on installer ergonomics, hardware-aware defaults, and an original tuning layer — without depending on DMS.
 
-```
-Part 1: Fork Omarchy        → Installer, hardware detection, themes, migrations
-Part 2: Consume DMS         → Desktop shell (Quickshell), used as-is
+```text
+Part 1: Fork Omarchy        → Installer, hardware detection, migrations, UX patterns
+Part 2: Build Tacharchy UX  → Our own shell / launcher / panel direction
 Part 3: Performance Layer   → 8 tuning packages (our unique contribution)
 ```
 
@@ -81,16 +81,14 @@ We fork Omarchy's entire installer and configuration system:
 - **Webapp system** — install web apps as desktop entries
 - **ISO build system** — Arch-based ISO with Limine + btrfs + snapper
 
-### Part 2: Consume DMS (Desktop Shell)
+### Part 2: Build Tacharchy UX (Desktop Layer)
 
-DankMaterialShell is consumed as-is — no fork, no rebrand:
+Tacharchy now owns its desktop direction instead of depending on DMS:
 
-- **Quickshell-based desktop shell** — unified launcher, bar, lock, notifications
-- **Go backend + CLI** — `dms` command for full control
-- **Cross-distro packaging** — Arch, Fedora, Debian, Ubuntu, openSUSE, Gentoo, NixOS
-- **Multi-compositor support** — niri, Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM
-- **Material You theming** — planned matugen integration upstream in DMS
-- **TUI installer** — planned interactive install flow
+- **Own shell direction** — launcher, bar, lock flow, notifications, and app menu under Tacharchy control
+- **Compositor-agnostic approach** — support multiple Wayland compositors without tying the project to one external shell ecosystem
+- **Theme pipeline we control** — wallpaper / seed-color driven theming integrated on our terms
+- **Installer-first UX** — the first-boot flow becomes the place where shell and app choices are assembled
 
 ### Part 3: Performance Tuning Layer (Original)
 
@@ -124,13 +122,13 @@ Our unique contribution — 8 AUR packages that tune your system:
 - Hot-reload system — change wallpaper, entire desktop updates
 
 ### 🔧 **Compositor Freedom**
-- niri (recommended), Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM
-- Or use DMS full shell, or go minimal with just compositor
+- Hyprland, Sway, MangoWC, labwc, Scroll, Miracle WM, and other sane Wayland targets
+- Or go minimal with just a compositor plus Tacharchy tooling
 - Your choice — nothing forced
 
 ### 📦 **Clean Architecture**
-- Fork Omarchy (installer, hardware, themes, migrations)
-- Consume DMS (desktop shell, no fork, no rebrand)
+- Fork Omarchy where it helps (installer, hardware, migrations)
+- Own the Tacharchy desktop layer instead of outsourcing identity
 - Add performance layer (original contribution)
 
 ### 🛡️ **Safe & Reversible**
@@ -173,7 +171,7 @@ paru -S tacharchy-foundation
 
 ## 🎮 What Tacharchy Is NOT
 
-- ❌ **Not** forking DMS — We consume DMS as-is, contribute theming upstream
+- ❌ **Not** tied to DMS or any single external shell community
 - ❌ **Not** just another distro — Performance tuning is our unique value
 - ❌ **Not** NixOS — We use vanilla Arch, KISS principle
 - ❌ **Not** Arch-only — Cross-distro support planned (Phase 2)
@@ -204,7 +202,7 @@ What already exists:
 - ✅ Design philosophy and requirements
 - ✅ Research on existing solutions
 - ✅ Complete architecture specification
-- ✅ Fork strategy (Omarchy) and consume strategy (DMS)
+- ✅ Fork strategy (Omarchy) and independent Tacharchy direction
 - ✅ 8 performance tuning packages
 - ✅ Forked installer baseline
 - ✅ Initial Tacharchy CLI (`status`, `benchmark`, `migrate`)
@@ -212,7 +210,7 @@ What already exists:
 
 **What happens next?**
 - Validate the installer flow on a clean Arch VM
-- Finish the upstream DMS theming path
+- Define and build the Tacharchy-controlled desktop layer
 - Keep tightening docs so they match the real implementation
 
 ---
@@ -221,9 +219,9 @@ What already exists:
 
 **Currently:** Prototype foundation work, validation, and doc cleanup.
 
-**Upcoming:** Clean-install testing, DMS theming upstream work, and installer polish.
+**Upcoming:** Clean-install testing, Tacharchy desktop-layer design, and installer polish.
 
-**Important:** We do NOT fork DMS (DankMaterialShell). We consume DMS as-is and contribute theming work upstream.
+**Important:** Tacharchy is no longer built around DMS. The project owns its own desktop direction.
 
 ---
 
@@ -234,19 +232,19 @@ What already exists:
 - ✅ Users who value FOSS software and transparency
 - ✅ Anyone who wants their desktop to feel smooth and responsive
 - ✅ People who like Material You theming
-- ✅ Users who want compositor freedom (niri, Hyprland, Sway, etc.)
+- ✅ Users who want compositor freedom (Hyprland, Sway, labwc, etc.)
 
 ---
 
 ## 🎨 Design Principles
 
-1. **Performance tuning is the core value** — everything else is forked or consumed
+1. **Performance tuning is the core value** — everything else should serve that
 2. **We give back your freedom** — compositor, shell, theme, apps: your choice
 3. **No bullshit** — no censorship, no politics, no gatekeeping
-4. **Don't reinvent** — fork Omarchy, consume DMS, build only what's missing
+4. **Don't reinvent blindly** — fork Omarchy where it helps, own the Tacharchy-specific UX
 5. **Everything documented with reasoning** — every sysctl, every fix, every choice
 6. **Everything reversible** — one command to remove all traces
-7. **DMS is consumed, not forked** — use DMS as-is, contribute upstream
+7. **Own the identity layer** — shell, theming path, and UX should be under Tacharchy control
 
 ---
 
@@ -257,7 +255,7 @@ What already exists:
 - ✅ Forked Omarchy installer baseline
 - ✅ Added Tacharchy CLI foundation (`status`, `benchmark`, `migrate`)
 - ⏳ Clean-install validation in VM / real hardware
-- ⏳ Port matugen / Material You theming upstream into DMS
+- ⏳ Build the Tacharchy-owned desktop layer and theme pipeline
 - ⏳ Theme system (matugen, 19 themes)
 - ⏳ App ecosystem (configs, webapps)
 - ⏳ ISO build system
@@ -305,5 +303,5 @@ MIT License — See [LICENSE](LICENSE) file.
 
 <p align="center">
 <strong>Tacharchy — Fast Freedom. Linux desktop tuned for performance.</strong><br>
-<strong>Fork Omarchy. Consume DMS. Add performance tuning. Simple.</strong>
+<strong>Fork Omarchy where it helps. Own the UX. Add performance tuning. Simple.</strong>
 </p>

@@ -19,7 +19,7 @@ On first login, the Tacharchy fullscreen installer launches automatically (**Pha
 1. Welcome screen
 2. Hardware detection (automatic)
 3. Compositor selection
-4. Desktop shell (DMS, Waybar, or none)
+4. Desktop layer selection (Tacharchy shell, Waybar stack, or minimal)
 5. Theme (wallpaper or named theme)
 6. Performance tuning
 7. Optional apps
@@ -63,12 +63,12 @@ The repo already includes:
 1. **Preflight / installer foundation** — forked Omarchy-style install scaffolding
 2. **Performance packages** — the `tacharchy-*` tuning layer
 3. **CLI baseline** — `tacharchy status`, `tacharchy benchmark`, and `tacharchy migrate`
-4. **DMS integration groundwork** — installer/docs assume DMS is consumed upstream
+4. **Desktop-layer pivot** — installer/docs now move away from DMS and toward Tacharchy-owned UX
 
 Still planned:
 
 5. **Clean-install validation** — VM first, then real hardware
-6. **Theming integration upstream** — matugen / Material You work contributed into DMS
+6. **Desktop layer implementation** — shell / launcher / panel architecture under Tacharchy control
 7. **First-run wizard polish** — compositor, theme, and app UX completed end-to-end
 
 ### Current CLI
@@ -82,9 +82,9 @@ tacharchy migrate       # Apply pending migrations
 ### Planned Install Flags
 
 ```bash
-tacharchy install --compositor niri       # Skip selection, use niri
 tacharchy install --compositor hyprland   # Use Hyprland
-tacharchy install --shell dms             # Use DMS desktop shell
+tacharchy install --compositor sway       # Use Sway
+tacharchy install --shell tacharchy       # Use the Tacharchy desktop layer
 tacharchy install --shell none            # No desktop shell, just compositor
 tacharchy install --theme tokyo-night     # Use named theme
 tacharchy install --no-tuning             # Skip performance tuning
@@ -103,33 +103,23 @@ paru -S tacharchy-foundation
 paru -S tacharchy-sysctl tacharchy-cpu tacharchy-gpu tacharchy-audio tacharchy-network tacharchy-io tacharchy-detect
 ```
 
-### DMS Shell
-
-DMS is installed from upstream packages (not forked by Tacharchy):
-
-```bash
-paru -S dms-shell    # From DMS upstream (package name may vary)
-```
-
-See [DankMaterialShell installation docs](https://danklinux.com/docs/dankmaterialshell/installation) for official DMS installation.
-
 ## Post-Install
 
 ### Verify Everything Works
 
 ```bash
-dms doctor              # Run diagnostics
 tacharchy detect        # Show hardware detection results
 tacharchy status        # Show tuning state
 tacharchy benchmark     # Run before/after comparison
+tacharchy migrate       # Apply compatibility / upgrade migrations
 ```
 
 ### Common First Steps
 
 ```bash
-dms theme set /path/to/wallpaper.jpg   # Set your wallpaper
-dms config                               # Open config editor
-tacharchy snapshot                       # Create a baseline snapshot
+tacharchy theme set /path/to/wallpaper.jpg   # Planned: set your wallpaper / theme
+tacharchy status                            # Check system state
+tacharchy snapshot                          # Create a baseline snapshot
 ```
 
 ## Uninstall
@@ -142,7 +132,7 @@ This removes:
 - All `/etc/tacharchy/` configs
 - All symlinks created by packages
 - Performance tuning packages
-- DMS shell (if installed via Tacharchy)
+- Legacy desktop-layer configs installed by older Tacharchy versions
 - Restores backed-up originals
 
 Your compositor, apps, and personal files are not touched.
@@ -182,15 +172,15 @@ ping -c 1 archlinux.org
 
 ```bash
 tacharchy status          # Check what's applied
-dms doctor                # Run diagnostics
+tacharchy benchmark       # Capture a quick state snapshot
 tacharchy detect          # Check hardware detection
 ```
 
 ### Theme not applying
 
 ```bash
-dms theme set /path/to/wallpaper.jpg  # Re-apply
-dms refresh all                        # Force reload all apps
+tacharchy theme set /path/to/wallpaper.jpg  # Planned: re-apply theme
+tacharchy shell reload                     # Planned: reload desktop-layer components
 ```
 
 ### Audio crackling
@@ -198,5 +188,5 @@ dms refresh all                        # Force reload all apps
 ```bash
 # Verify realtime scheduling
 groups | grep audio       # Should show 'audio'
-dms doctor                # Check audio status
+tacharchy status          # Check current tuning state
 ```

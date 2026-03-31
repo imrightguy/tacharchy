@@ -1,12 +1,12 @@
 # Tacharchy Migrations
 
-This directory contains timestamp-based migrations that are applied via `tacharchy migrate`.
+This directory contains timestamp-based migrations that are applied via `tacharchy migrate`. Older migrations may remain as no-op compatibility shims when project direction changes.
 
 ## Naming Convention
 
 Migrations should be named using the format: `YYYYMMDD_description.sh`
 
-Example: `20250329_add-dms-integration.sh`
+Example: `20250329_adjust-theme-layout.sh`
 
 ## Migration Script Format
 
@@ -22,7 +22,7 @@ Example:
 #!/bin/bash
 set -euo pipefail
 
-echo "Applying migration: Add DMS integration configuration..."
+echo "Applying migration: Adjust theme layout..."
 
 # Migration logic here...
 

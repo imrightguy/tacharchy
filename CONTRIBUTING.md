@@ -6,7 +6,7 @@ Thank you for your interest! Here's how to get started.
 
 1. **Fork the repo** and clone your fork
 2. **Pick an issue** from the [issue tracker](https://github.com/imrightguy/tacharchy/issues) labeled `good first issue`
-3. **Create a branch** from `main` (e.g. `feat/sysctl-nvidia` or `fix/niri-theme`)
+3. **Create a branch** from `main` (e.g. `feat/sysctl-nvidia` or `fix/theme-pipeline`)
 4. **Make your changes** with clear commit messages
 5. **Open a pull request**
 
@@ -45,10 +45,10 @@ tacharchy/
     └── 1xxxxxxxxx.sh
 ```
 
-## What We Fork
+## What We Fork / Own
 
 - **[Omarchy](https://github.com/basecamp/omarchy)** — Installer, hardware detection, themes, migrations, app configs, ISO system
-- **[DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell)** — Consumed as-is for desktop shell
+- **Tacharchy desktop layer** — Owned in-project rather than delegated to an external shell dependency
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full breakdown.
 
@@ -58,7 +58,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 feat(sysctl): add zram swap detection
-fix(niri): correct theme color parsing
+fix(theme): correct palette role parsing
 docs(readme): add installation instructions
 refactor(detect): simplify GPU detection logic
 ```
@@ -66,7 +66,7 @@ refactor(detect): simplify GPU detection logic
 ## Code Style
 
 - **Go:** follow standard library patterns (standard gofmt, tests in same package)
-- **QML:** follow Qt naming conventions (when working with DMS theming contributions)
+- **UI code:** follow the conventions of the chosen Tacharchy desktop-layer stack
 - **Shell scripts:** `set -eEo pipefail`, helper functions in shared files
 - **Config files:** clear comments explaining *why*, not just *what*
 - **PKGBUILDs:** follow Arch packaging guidelines
@@ -96,11 +96,11 @@ See `docs/sysctl.md` for the reference format.
 
 ## Adding a Compositor
 
-1. Create config template in the DMS config layer or standalone config
+1. Create config template in the Tacharchy desktop layer or standalone config
 2. Add theme integration (border colors, background, text)
 3. Add keybind defaults matching our consistency table
 4. Add to the compositor selection menu in the installer
-5. Test with DMS shell and standalone (no shell)
+5. Test with the Tacharchy desktop layer and standalone (no shell)
 6. Test with multiple themes
 7. Document in `docs/COMPOSITORS.md`
 
@@ -114,21 +114,21 @@ See `docs/sysctl.md` for the reference format.
 6. Test with all supported compositors
 7. Submit PR
 
-## DMS Integration
+## Desktop Layer Direction
 
-DMS is consumed as-is, not forked. When contributing theming work:
+Tacharchy owns its desktop layer. When contributing UX work:
 
-- **Check DMS upstream first** — theming features should be contributed to DMS, not forked
-- **Use DMS plugin system** for extensions when possible
-- **Follow DMS contribution guidelines** when submitting upstream PRs
-- See [DankMaterialShell docs](https://danklinux.com/docs) for integration patterns
+- Keep the user-facing experience under Tacharchy control
+- Avoid hard dependencies on external shell ecosystems
+- Prefer reusable internal abstractions for launcher, panel, lock flow, and theming
+- Document architectural tradeoffs in `docs/ARCHITECTURE.md`
 
 ## Reporting Issues
 
 Include:
 - Distro and version
 - Compositor and version
-- Output of `dms doctor`
+- Output of `tacharchy status`
 - Output of `tacharchy detect`
 - Steps to reproduce
 - Expected vs actual behavior

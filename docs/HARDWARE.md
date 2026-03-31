@@ -1,6 +1,6 @@
 # Hardware Detection
 
-Tacharchy automatically detects your hardware and applies appropriate fixes, drivers, and optimizations. Detection happens during installation and is intended to be re-runnable via `tacharchy detect` once that command is wired into the main CLI.
+Tacharchy automatically detects your hardware and applies appropriate fixes, drivers, and optimizations. Detection happens during installation and is intended to be re-runnable via `tacharchy detect` once that command is wired into the main CLI. This is independent of any particular shell project.
 
 ## Detection Flow
 

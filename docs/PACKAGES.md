@@ -108,18 +108,16 @@ tacharchy-detect --verbose    # Detailed output
 - Network (interfaces, link speed)
 - RAM amount
 
-## DMS Shell
+## Desktop Layer
 
-DMS (DankMaterialShell) is consumed as-is from upstream packages:
+Tacharchy is moving away from external shell dependencies. The long-term plan is to ship a Tacharchy-owned desktop layer on top of the installer and tuning foundation.
 
-```bash
-# Install DMS from upstream
-paru -S dms-shell    # Package name may vary, check DMS docs
-```
+For now, package work is focused on:
 
-See [DankMaterialShell installation docs](https://danklinux.com/docs/dankmaterialshell/installation) for official installation.
-
-DMS is **not** packaged by Tacharchy — we use the official upstream packages.
+- performance tuning packages
+- hardware detection
+- installer building blocks
+- future shell / launcher / panel components under Tacharchy control
 
 ## File Layout
 

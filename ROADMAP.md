@@ -4,9 +4,9 @@
 
 - [x] Analyze CachyOS tuning (sysctls, kernel patches, scheduler)
 - [x] Analyze Omarchy architecture (install scripts, config layer, theming, hardware detection)
-- [x] Analyze DankLinux/DMS architecture (Quickshell shell, Go backend, cross-distro, multi-compositor)
-- [x] Define project vision: fork Omarchy, consume DMS, add performance tuning layer
-- [x] Name: **Tacharchy** (project), DMS stays DMS (not forked, not rebranded)
+- [x] Analyze external shell ecosystems (including DMS) for lessons, wins, and traps
+- [x] Define project vision: fork Omarchy where useful, own the Tacharchy desktop layer, add performance tuning
+- [x] Name: **Tacharchy** — its own project and UX direction
 - [x] Fork Omarchy for study
 - [x] Deep-dive Omarchy repo structure, catalog wins/losses/gaps
 - [x] Create GitHub repo with README, BRAND.md, LICENSE
@@ -17,7 +17,7 @@
 
 ### 1a: Performance Tuning Packages ✅
 
-Our unique value — neither Omarchy nor DMS touches system performance tuning.
+Our unique value — the desktop world is full of shells, but almost nobody touches system performance tuning properly.
 
 - [x] `tacharchy-sysctl` — kernel parameter tuning with documented reasoning
 - [x] `tacharchy-audio` — PipeWire realtime scheduling, CPU affinity
@@ -49,16 +49,15 @@ Fork Omarchy's installer system for Tacharchy, adapting branding and integrating
 - [x] Add tacharchy-foundation installation step in packaging phase
 - [x] Add tacharchy-detect step in config phase
 
-### 1c: Consume DMS + Port Theming
+### 1c: Remove External Shell Dependency + Establish Tacharchy UX
 
-Consume DankMaterialShell as-is (no fork, no rebrand). Port matugen theming work into DMS upstream.
+Stop building Tacharchy around DMS. Keep the installer foundation, tuning layer, and hardware work; replace the shell dependency with Tacharchy-owned UX.
 
-- [x] Package DMS as dependency (consume existing DMS packages)
-- [ ] Port matugen/Material You theming integration into DMS (upstream contribution)
-- [x] Integrate DMS into Tacharchy installer
 - [x] Add `tacharchy status` — show current tuning state
 - [x] Add `tacharchy benchmark` — before/after performance comparison
 - [x] Add `tacharchy migrate` — timestamp-based migrations
+- [ ] Remove DMS packaging, migration, and installer assumptions
+- [ ] Define Tacharchy shell / launcher / panel architecture
 - [ ] Test on clean Arch install (VM first, then real hardware)
 
 ### 1d: Hardware Detection Refinement
@@ -77,14 +76,14 @@ Refine hardware detection with native Go implementation (building on forked Omar
 
 ### 1e: Theme System
 
-matugen: Material You palette generation from wallpaper or seed color. Ported into DMS.
+A Tacharchy-controlled theme pipeline: wallpaper or seed color → generated palette → apps and shell.
 
-- [ ] Convert Omarchy's 19 themes to matugen seed colors
-- [ ] Ensure matugen dynamic theming works through DMS
+- [ ] Convert Omarchy's 19 themes to Tacharchy presets / seed colors
+- [ ] Implement dynamic theming through Tacharchy-owned tooling
 - [ ] Create Tacharchy default theme (dark orange brand)
 - [ ] Per-app theme configs: neovim, VS Code, btop, Chromium, ghostty, kitty, alacritty
 - [ ] Light/dark mode support
-- [ ] Hot-reload system (`dms refresh` or matugen hooks)
+- [ ] Hot-reload system for shell + apps
 
 ### 1f: App Ecosystem
 
@@ -135,8 +134,8 @@ Port Omarchy's app configs and webapp system.
 1. **Performance tuning is our unique contribution** — the piece nobody else provides, baked into a complete desktop
 2. **We give back your freedom** — compositor, shell, theme, apps: your choice
 3. **No bullshit** — no censorship, no politics, no gatekeeping
-4. **Don't reinvent** — fork Omarchy as the foundation, consume DMS as-is, build only what's missing
+4. **Don't reinvent blindly** — fork Omarchy where it helps, own the missing Tacharchy pieces, avoid dependency traps
 5. **Everything documented with reasoning** — every sysctl, every fix, every choice
 6. **Everything reversible** — one command to remove all traces
-7. **DMS is consumed, not forked** — use DMS as-is, contribute theming work upstream
+7. **Own the identity layer** — Tacharchy should control its shell, theming path, and UX decisions
 8. **Wayland only** — no X11 support

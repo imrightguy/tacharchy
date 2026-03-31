@@ -19,13 +19,13 @@ usage() {
   cat << EOF
 Tacharchy CLI v${VERSION}
 
-Manage your Tacharchy installation - performance tuning, DMS integration, and system diagnostics.
+Manage your Tacharchy installation - performance tuning, installer migrations, and system diagnostics.
 
 USAGE:
   tacharchy <COMMAND> [OPTIONS]
 
 COMMANDS:
-  status      Show current tuning state and DMS integration
+  status      Show current tuning state and system integration status
   benchmark   Run before/after performance comparison
   migrate     Apply timestamp-based migrations
   help        Show this help message
@@ -53,7 +53,7 @@ Shows:
   - Tacharchy version
   - Installed tuning packages
   - Performance tuning status (sysctls, audio, GPU, network, I/O, CPU)
-  - DMS integration status
+  - Desktop/session integration status
   - Hardware detection summary
 EOF
       ;;
@@ -164,19 +164,14 @@ status() {
   fi
   echo ""
 
-  # Check DMS
-  echo -e "${GREEN}=== DMS Integration ===${NC}"
-  if command -v dms &>/dev/null; then
-    local dms_version=$(dms --version 2>/dev/null || echo "unknown")
-    echo -e "  ${GREEN}✓${NC} DMS installed (${dms_version})"
+  # Desktop/session integration
+  echo -e "${GREEN}=== Desktop Session ===${NC}"
+  echo "  Session type: ${XDG_SESSION_TYPE:-unknown}"
+  echo "  Desktop: ${XDG_CURRENT_DESKTOP:-unknown}"
+  if command -v waybar &>/dev/null; then
+    echo -e "  ${GREEN}✓${NC} waybar available"
   else
-    echo -e "  ${RED}✗${NC} DMS not installed"
-  fi
-
-  if [[ -d "$HOME/.config/dms" ]]; then
-    echo -e "  ${GREEN}✓${NC} DMS config directory exists"
-  else
-    echo -e "  ${YELLOW}⚠${NC} DMS config directory not found (will be created on first run)"
+    echo -e "  ${YELLOW}⚠${NC} waybar not installed"
   fi
   echo ""
 

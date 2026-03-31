@@ -1,63 +1,55 @@
 # Compositor Support
 
-Tacharchy supports multiple Wayland compositors through DMS (DankMaterialShell). Choose yours during installation — nothing is forced.
+Tacharchy supports multiple Wayland compositors through its own desktop-layer direction. Choose yours during installation — nothing is forced.
 
 ## Supported Compositors
-
-### niri
-Scrollable-tiling Wayland compositor with smooth animations. Our recommended default.
-
-- **Config format:** KDL (`config.kdl`)
-- **Status:** Primary target, best tested
-- **DMS integration:** Full (workspace switching, overview, monitor management)
-- **Standalone:** Full theme support
 
 ### Hyprland
 Dynamic tiling Wayland compositor with extensive customization.
 
 - **Config format:** Hyprland config (`hyprland.conf`)
-- **Status:** Fully supported
-- **DMS integration:** Full
-- **Standalone:** Full theme support
+- **Status:** Active target
+- **Desktop-layer support:** Planned
+- **Standalone:** Full theme support planned
 
 ### Sway
 i3-compatible Wayland compositor. Stable and well-documented.
 
 - **Config format:** i3-compatible (`config`)
-- **Status:** Fully supported
-- **DMS integration:** Full
-- **Standalone:** Full theme support
-
-### MangoWC
-Wayland compositor built with MangoHud's rendering pipeline.
-
-- **Config format:** Custom
-- **Status:** Supported
-- **DMS integration:** Full
-- **Standalone:** Basic theme support
+- **Status:** Active target
+- **Desktop-layer support:** Planned
+- **Standalone:** Full theme support planned
 
 ### labwc
 Stacking Wayland compositor (openbox-compatible).
 
 - **Config format:** XML (`rc.xml`) + theme
-- **Status:** Supported
-- **DMS integration:** Full
+- **Status:** Supported target
+- **Desktop-layer support:** Planned
 - **Standalone:** Colors and borders
+
+### MangoWC
+Wayland compositor built with MangoHud's rendering pipeline.
+
+- **Config format:** Custom
+- **Status:** Exploratory target
+- **Desktop-layer support:** Planned
+- **Standalone:** Basic theme support
 
 ### Scroll
 Scrolling Wayland compositor.
 
 - **Config format:** Custom
-- **Status:** Supported
-- **DMS integration:** Full
+- **Status:** Exploratory target
+- **Desktop-layer support:** Planned
 - **Standalone:** Basic theme support
 
 ### Miracle WM
 Tiling Wayland compositor for Ubuntu.
 
 - **Config format:** Custom
-- **Status:** Supported
-- **DMS integration:** Full
+- **Status:** Exploratory target
+- **Desktop-layer support:** Planned
 - **Standalone:** Basic theme support
 
 ### river
@@ -65,7 +57,7 @@ Dynamic tiling Wayland compositor (inspired by dwm).
 
 - **Config format:** init script
 - **Status:** Planned
-- **DMS integration:** Basic
+- **Desktop-layer support:** Planned
 - **Standalone:** Colors only
 
 ### Wayfire
@@ -73,7 +65,7 @@ Dynamic tiling Wayland compositor (inspired by dwm).
 
 - **Config format:** INI (`wf.ini`)
 - **Status:** Planned
-- **DMS integration:** Planned
+- **Desktop-layer support:** Planned
 - **Standalone:** Planned
 
 ### dwl
@@ -81,24 +73,27 @@ Minimal dwm-like Wayland compositor.
 
 - **Config format:** C header (`config.h`) — requires recompilation
 - **Status:** Planned
-- **DMS integration:** Limited (no ext_workspace protocol)
+- **Desktop-layer support:** Limited
 - **Standalone:** Colors only
 
 ## Not Supported
 
 ### GNOME / KDE Plasma
-These have their own shell, theming system, and ecosystem. Tacharchy's performance tuning packages still apply. DMS and theme integration are not planned — GNOME and KDE users should use their native tools.
+These have their own shell, theming system, and ecosystem. Tacharchy's performance tuning packages still apply, but Tacharchy is not trying to replace their native UX.
 
 ### X11 Compositors
 Tacharchy is Wayland only. No X11 support is planned.
 
-## Desktop Shell Options
+## Desktop Layer Options
 
-### DMS (DankMaterialShell)
-The full desktop shell experience. Replaces waybar + swaylock + swayidle + mako + fuzzel + polkit with one unified Quickshell app. Works best with niri and Hyprland, fully supported on all listed compositors.
+### Tacharchy Shell (planned)
+The full desktop-layer experience: launcher, bar, lock flow, notifications, app menu, and theme integration under Tacharchy control.
 
-### Standalone
-No desktop shell. Just your compositor with Tacharchy's performance tuning and theme colors applied. For minimalists who prefer their own bar, notifications, and launcher.
+### Waybar Stack
+A modular stack using compositor-native or standard Wayland pieces.
+
+### Minimal
+No desktop layer. Just your compositor with Tacharchy's performance tuning and theme colors applied.
 
 ## Keybind Consistency
 
@@ -107,7 +102,7 @@ We aim for consistent keybinds across compositors where possible:
 | Action | Default | Notes |
 |---|---|---|
 | Terminal | `Super + Enter` | |
-| App launcher | `Super + Space` | DMS launcher or system launcher |
+| App launcher | `Super + Space` | Tacharchy launcher or system launcher |
 | Close window | `Super + Shift + Q` | |
 | Move focus | `Super + Arrow` or `Super + HJKL` | Vim-style optional |
 | Toggle floating | `Super + V` | Tiling compositors only |
@@ -115,11 +110,6 @@ We aim for consistent keybinds across compositors where possible:
 | Screenshot | `Print` | Full screen |
 | Screenshot region | `Super + Print` | Selection tool |
 | Screen record | `Super + Shift + Print` | |
-| Volume up/down | `XF86AudioRaise/LowerVolume` | Via SwayOSD or DMS |
-| Brightness up/down | `XF86MonBrightnessUp/Down` | Via SwayOSD or DMS |
-| Lock screen | `Super + L` | DMS lock or swaylock |
-| Overview | `Super + Tab` | DMS workspace overview |
-
-## Adding a New Compositor
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md#adding-a-compositor) for the process.
+| Volume up/down | `XF86AudioRaise/LowerVolume` | Via standard Wayland tooling |
+| Brightness up/down | `XF86MonBrightnessUp/Down` | Via standard Wayland tooling |
+| Lock screen | `Super + L` | Tacharchy lock flow or swaylock |
