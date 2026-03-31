@@ -113,6 +113,7 @@ Our unique contribution — 8 AUR packages that tune your system:
 ### 🚀 **Performance First**
 - 8 tuning packages optimize kernel, CPU, GPU, audio, network, I/O
 - Per-vendor hardware fixes (Intel, NVIDIA, AMD, Apple, ASUS, Framework, Dell)
+- Better hardware detection is part of the product, not an afterthought
 - Documented reasoning for every tuning value
 - Benchmark before/after to see the difference
 

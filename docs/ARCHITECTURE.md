@@ -40,7 +40,7 @@ Tacharchy owns the desktop layer instead of depending on DMS:
 
 ### Original (performance tuning)
 
-Our unique contribution — performance tuning remains the part almost nobody else does properly:
+Our unique contribution is not just shell aesthetics. Performance tuning and hardware-aware behavior remain the parts almost nobody else does properly, even when they ship polished compositor/shell combinations:
 
 - **tacharchy-sysctl** — kernel parameter tuning with documented reasoning
 - **tacharchy-cpu** — Intel hybrid P/E core tuning, AMD preferred cores

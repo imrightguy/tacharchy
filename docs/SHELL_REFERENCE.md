@@ -85,6 +85,8 @@ Noctalia is clear that it is a shell, not a full DE, and that some things belong
 - define what stays external app/system territory
 - prevent scope creep before it turns into product sludge
 
+A polished shell stack is not enough on its own. Distros can pair nice shell choices with weak hardware detection and still feel sloppy in practice. Tacharchy should treat hardware-aware defaults and detection quality as part of the product, not a side concern.
+
 ---
 
 ### 7. Registries for extensibility
